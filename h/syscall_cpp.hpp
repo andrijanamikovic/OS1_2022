@@ -5,10 +5,12 @@
 #ifndef _syscall_cpp
 #define _syscall_cpp
 
+#include "../lib/hw.h"
+
 //#include "syscall_c.h"
 //
-//void* ::operator new (size_t size);
-//void ::operator delete (void*);
+//void *operator new (size_t size);
+//void operator delete (void* p);
 
 
 //class Thread {

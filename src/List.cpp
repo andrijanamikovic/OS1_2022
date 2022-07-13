@@ -3,61 +3,84 @@
 //
 
 #include "../h/List.hpp"
+#include "../h/syscall_cpp.hpp"
 
 List::List() {
-    //ove sve stvari su bile lock prosle godine???//
     first=last=0;
 }
+
 List::~List() {
-    Node* temp;
-    while (first){
-        temp = first;
-        first = first->next;
-        if (temp)
-            delete temp;
-    }
-    last = first;
+//    BlockHeader* temp;
+//    while (first){
+//        temp = first;
+//        first = first->next;
+//        if (temp)
+//            delete temp;
+//    }
+    last = first = nullptr;
 }
 
-void *List::popList() {
-    if (!first) return nullptr;
-    void * data = first->data;
+uint64 List::popList() {
+    if (!first) return -1;
+    uint64 size = first->size;
     first = first->next;
     if (!first) last = first;
-    return data;
+    return size;
 }
 
-void List::pushList(void *data) {
-    if (!data) return;
-    Node* temp = new Node(data);
+void List::putBlock(BlockHeader* newBlck) {
+    if (newBlck == nullptr) return;
     if (!first) {
-        first = temp;
+        last = first = newBlck;
+        return;
     }
-    else if (last) last->next = temp;
-    last = temp;
+    else if (last) {
+        if (newBlck > last){
+            last->next = newBlck;
+            newBlck->prev = last;
+            last = newBlck;
+            return;
+        }
+        BlockHeader* current = first;
+        while (current < newBlck){
+            current = current->next;
+        }
+        current->prev->next = newBlck;
+        newBlck->prev = current->prev;
+        current->prev = newBlck;
+        newBlck->next = current;
+    }
+}
+uint64 List::getList() {
+    if (!first) return -1;
+    uint64 size = first->size;
+    return size;
 }
 
-void *List::getList() {
-    if (!first) return nullptr;
-    return first->data;
+BlockHeader *List::getFirst() {
+    return first;
 }
-int List::removeList(void* current){
-    if (!first) return -1;
-    Node* prev = first;
-    if (first->data == current){
+
+BlockHeader *List::getLast() {
+    return last;
+}
+
+BlockHeader *List::init(BlockHeader *address) {
+    if (address == nullptr || first != nullptr)
+        return nullptr;
+    first = last = address;
+    return first;
+}
+
+void List::removeBlock(BlockHeader *Blck) {
+    if (Blck == first){
         first = first->next;
-        if(!first) last = nullptr;
-        delete prev;
+        if (first == nullptr) last= nullptr;
+    } else if (Blck == last){
+        last = last->prev;
     }
-    Node* temp = first->next;
-    while (temp){
-        if (temp->data==current){
-            prev->next = temp->next;
-            if (!temp->next) last = prev;
-            return 1;
-        }
-        prev = temp;
-        temp = temp ->next;
-    }
-    return  -1;
+    Blck->prev->next = Blck->next;
+    Blck->next->prev = Blck->prev;
 }
+
+

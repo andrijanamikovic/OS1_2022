@@ -5,23 +5,30 @@
 #ifndef OS1_2022_LIST_H
 #define OS1_2022_LIST_H
 
-struct Node {
-    void *data;
-    Node* next;
-    Node(void *data, Node* next = nullptr):data(data),next(next){};
-    ~Node(){data= nullptr; next = nullptr;}
+#include "../lib/hw.h"
+
+struct BlockHeader {
+    uint64 size;
+    BlockHeader* next;
+    BlockHeader* prev;
+    BlockHeader(uint64 size, BlockHeader* next = nullptr, BlockHeader* prev = nullptr): size(size), next(next),prev(prev){};
+    ~BlockHeader(){ size= 0; next = nullptr; prev = nullptr;}
 };
 
 class List {
 public:
     List();
     ~List();
-    void pushList(void* data);
-    void* popList();
-    void* getList();
-    int removeList(void* current);
+    void putBlock(BlockHeader* newBlck);
+    void removeBlock(BlockHeader* Blck);
+    uint64 popList();
+    uint64 getList();
+    BlockHeader* getFirst();
+    BlockHeader* init(BlockHeader* address);
+    BlockHeader* getLast();
 private:
-    Node *first, *last;
+    BlockHeader *first, *last;
+
 };
 
 

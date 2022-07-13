@@ -14,10 +14,11 @@ class MemoryAllocator{
 public:
     MemoryAllocator(MemoryAllocator&) = delete;
     void operator=(const MemoryAllocator &) = delete;
+    static uint64 getFirst();
 protected:
     void* __mem_alloc(size_t size);
     int __mem_free(void* ptr);
-    static MemoryAllocator& memoryAllocator;
+    static MemoryAllocator* memoryAllocator_;
 private:
     MemoryAllocator();
     static List* FreeMemoryBlocks;
