@@ -5,16 +5,15 @@
 #include "../h/MemoryAllocator.hpp"
 #include "../lib/hw.h"
 #include "../h/print.hpp"
+#include "../h/BlockHeader.hpp"
 
-List* MemoryAllocator::FreeMemoryBlocks = new List();
-List* MemoryAllocator::AllocatedMemoryBlocks = new List();
-MemoryAllocator* MemoryAllocator::memoryAllocator_ = nullptr;
+BlockHeader* MemoryAllocator::FreeMemoryBlocks = nullptr;
+BlockHeader* MemoryAllocator::AllocatedMemoryBlocks = nullptr;
+bool MemoryAllocator::initialize = false;
 
-void* MemoryAllocator::__mem_alloc(size_t size){
-    if (memoryAllocator_== nullptr) {
-        memoryAllocator_ = new MemoryAllocator();
-    }
-    BlockHeader* current = FreeMemoryBlocks->getFirst();
+void* MemoryAllocator::mem_alloc(size_t size){
+    if (initialize == false) MemoryAllocator::init();
+    BlockHeader* current = FreeMemoryBlocks->first;
     while(current){
         if (current->size >= size) break;
         current = current->next;
@@ -23,49 +22,56 @@ void* MemoryAllocator::__mem_alloc(size_t size){
     BlockHeader* newBlck;
 
     size_t remaining = current->size - size;
-    if (remaining >= sizeof (BlockHeader*) + MEM_BLOCK_SIZE){
-        if (AllocatedMemoryBlocks == nullptr){
-            AllocatedMemoryBlocks = (List*)(current+remaining-sizeof (BlockHeader*));
+    if (remaining >= sizeof (BlockHeader) + MEM_BLOCK_SIZE){
+        if (AllocatedMemoryBlocks == nullptr) {
+            AllocatedMemoryBlocks = (BlockHeader *) ((char*) current + remaining - sizeof(BlockHeader)); //meni ova linija setuje first na 101010.... zasto?
+            AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->last = nullptr;
         }
-        newBlck = (BlockHeader*)(current+remaining-sizeof (BlockHeader*)); //sizeof list* ....
+        newBlck = (BlockHeader*)((char*)current+remaining-sizeof (BlockHeader));
         newBlck->size = size;
+        printInteger(newBlck->size);
         newBlck->next = nullptr;
         newBlck->prev = nullptr;
         AllocatedMemoryBlocks->putBlock(newBlck);
-        current->size = remaining - sizeof(BlockHeader*);
+        current->size = remaining - sizeof(BlockHeader);
     } else {
         newBlck = current;
         FreeMemoryBlocks->removeBlock(current);
         if (AllocatedMemoryBlocks == nullptr){
-            AllocatedMemoryBlocks = (List*)(current+remaining-sizeof (BlockHeader*));
+            AllocatedMemoryBlocks = (BlockHeader*)(current + remaining - sizeof (BlockHeader*));
         }
-
-        //moram da prevezem listu ako nemama dovoljno velike free segmente
-        //lakse mi je da je dvostruko ulancam ipak
+        AllocatedMemoryBlocks->putBlock(newBlck);
     }
 
     return newBlck;
 };
 
-int MemoryAllocator::__mem_free(void* ptr){
-    if (memoryAllocator_== nullptr) {
-        memoryAllocator_ = new MemoryAllocator();
+int MemoryAllocator::mem_free(void* ptr){
+    if (initialize == false) {
+        MemoryAllocator::init();
     }
+    if (AllocatedMemoryBlocks == nullptr) return -1;
+    BlockHeader* blck = (BlockHeader*) ptr;
+    AllocatedMemoryBlocks->removeBlock(blck);
+    blck->next = nullptr;
+    blck->prev = nullptr;
+    FreeMemoryBlocks->putBlock((BlockHeader*) ptr);
+    FreeMemoryBlocks->join((BlockHeader*)ptr);
     return 0;
 };
 
-MemoryAllocator::MemoryAllocator() {
-    //I initialize Free memory - hole heap, at start address, and Allocated is null at the begging
-    FreeMemoryBlocks= (List*) HEAP_START_ADDR;
-    BlockHeader* first = FreeMemoryBlocks->init((BlockHeader*) HEAP_START_ADDR + sizeof (List*));
-    first->size = (char*)HEAP_END_ADDR - (char*)HEAP_START_ADDR - 1;
-    first->prev = first->next = nullptr;
-    AllocatedMemoryBlocks = nullptr;
+void MemoryAllocator::init() {
+    FreeMemoryBlocks= (BlockHeader*) HEAP_START_ADDR;
+    FreeMemoryBlocks->first = FreeMemoryBlocks->init((BlockHeader*) HEAP_START_ADDR );
+    FreeMemoryBlocks->first->size = (char*)HEAP_END_ADDR - (char*)HEAP_START_ADDR - 1;
+    FreeMemoryBlocks->first->prev =  FreeMemoryBlocks->first->next = nullptr;
+    initialize = true;
 }
 
 uint64 MemoryAllocator::getFirst() {
-    if (memoryAllocator_== nullptr) {
-        memoryAllocator_ = new MemoryAllocator();
+    if (initialize == false) {
+        MemoryAllocator::init();
     }
     return  FreeMemoryBlocks->getList();
 }
+

@@ -5,7 +5,7 @@
 #ifndef OS1_2022_MEMORYALLOCATOR_H
 #define OS1_2022_MEMORYALLOCATOR_H
 
-#include "./List.hpp"
+#include "./BlockHeader.hpp"
 #include "../lib/hw.h"
 //#ifdef __cplusplus
 //extern "C" {
@@ -15,14 +15,16 @@ public:
     MemoryAllocator(MemoryAllocator&) = delete;
     void operator=(const MemoryAllocator &) = delete;
     static uint64 getFirst();
-protected:
-    void* __mem_alloc(size_t size);
-    int __mem_free(void* ptr);
-    static MemoryAllocator* memoryAllocator_;
+//    static void* __mem_alloc(size_t size);
+    static BlockHeader* FreeMemoryBlocks;
+    static BlockHeader* AllocatedMemoryBlocks;
+    static void* mem_alloc(size_t size); //ovde treba da stoji prebacila sam u public da bi mogla da testiram samo u mainu
+    static int mem_free(void* ptr);
 private:
-    MemoryAllocator();
-    static List* FreeMemoryBlocks;
-    static List* AllocatedMemoryBlocks;
+    static void init();
+    static bool initialize;
+//    static BlockHeader* FreeMemoryBlocks; //ovde treba da stoji....
+//    static BlockHeader* AllocatedMemoryBlocks;
 };
 
 //#ifdef __cplusplus
