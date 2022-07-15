@@ -38,12 +38,12 @@ void* MemoryAllocator::mem_alloc(size_t size){
         newBlck = current;
         FreeMemoryBlocks->removeBlock(current);
         if (AllocatedMemoryBlocks == nullptr){
-            AllocatedMemoryBlocks = (BlockHeader*)(current + remaining - sizeof (BlockHeader*));
+            AllocatedMemoryBlocks = (BlockHeader*)(current + remaining - sizeof (BlockHeader));
         }
         AllocatedMemoryBlocks->putBlock(newBlck);
     }
 
-    return newBlck;
+    return newBlck + sizeof(BlockHeader); // + sizeof(BlockHeader) treba da vrati pokazivac na mesto odmah posle zaglavlja? ali misim da mi to onda remeti i ostatak koda
 };
 
 int MemoryAllocator::mem_free(void* ptr){
@@ -51,20 +51,21 @@ int MemoryAllocator::mem_free(void* ptr){
         MemoryAllocator::init();
     }
     if (AllocatedMemoryBlocks == nullptr) return -1;
-    BlockHeader* blck = (BlockHeader*) ptr;
+    BlockHeader* blck = (BlockHeader*)ptr - sizeof(BlockHeader);
     AllocatedMemoryBlocks->removeBlock(blck);
     blck->next = nullptr;
     blck->prev = nullptr;
-    FreeMemoryBlocks->putBlock((BlockHeader*) ptr);
-    FreeMemoryBlocks->join((BlockHeader*)ptr);
+    FreeMemoryBlocks->putBlock((BlockHeader*) blck);
+    FreeMemoryBlocks->join((BlockHeader*)blck);
     return 0;
 };
 
 void MemoryAllocator::init() {
-    FreeMemoryBlocks= (BlockHeader*) HEAP_START_ADDR;
-    FreeMemoryBlocks->first = FreeMemoryBlocks->init((BlockHeader*) HEAP_START_ADDR );
-    FreeMemoryBlocks->first->size = (char*)HEAP_END_ADDR - (char*)HEAP_START_ADDR - 1;
-    FreeMemoryBlocks->first->prev =  FreeMemoryBlocks->first->next = nullptr;
+    BlockHeader* initBlock = (BlockHeader*) HEAP_START_ADDR;
+    initBlock->next = initBlock->prev = nullptr;
+    initBlock->size = (char*)HEAP_END_ADDR - (char*)HEAP_START_ADDR - 1;
+    FreeMemoryBlocks = (BlockHeader*) HEAP_START_ADDR;
+    FreeMemoryBlocks->putBlock(initBlock);
     initialize = true;
 }
 

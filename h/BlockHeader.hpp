@@ -13,7 +13,7 @@ public:
     void putBlock(BlockHeader* newBlck);
     void removeBlock(BlockHeader* Blck);
     size_t getList();
-    BlockHeader* init(BlockHeader* address);
+    void init(BlockHeader* address);
     void printList();
     void join(BlockHeader* blck);
 

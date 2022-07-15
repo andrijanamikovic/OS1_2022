@@ -43,12 +43,12 @@ size_t BlockHeader::getList() {
     return size;
 }
 
-BlockHeader *BlockHeader::init(BlockHeader *address) {
+void BlockHeader::init(BlockHeader *address) {
     if (address == nullptr) { //i would check first!=nullptr also but it breaks?
-        return nullptr;
+        return;
     }
     first = last = address;
-    return first; //maybe void as return value?
+   // return first; //maybe void as return value?
 }
 
 void BlockHeader::removeBlock(BlockHeader *Blck) {
@@ -58,8 +58,10 @@ void BlockHeader::removeBlock(BlockHeader *Blck) {
     } else if (Blck == last){
         last = last->prev;
     }
-    Blck->prev->next = Blck->next;
-    Blck->next->prev = Blck->prev;
+    if (Blck->prev)
+        Blck->prev->next = Blck->next;
+    if (Blck->next)
+        Blck->next->prev = Blck->prev;
 }
 
 BlockHeader::BlockHeader() {
@@ -84,26 +86,34 @@ void BlockHeader::printList() {
 void BlockHeader::join(BlockHeader *blck) {
     if (blck == first && blck == last) return;
     if (blck->prev) {
-        if ((char*)blck->prev + blck->prev->size == (char*)blck) { //mozda nesto treba da se castuje????
+        if ((char*)blck->prev + blck->prev->size == (char*)blck ) { //mozda nesto treba da se castuje????
             blck->prev->size += blck->size + sizeof(BlockHeader); //imam razliku 190 i onda ne dolazi do spajanja blokova????
-            blck->next->prev = blck->prev;
+            if (blck->next)
+                blck->next->prev = blck->prev;
+
             blck->prev->next = blck->next;
             blck = blck->prev;
         }
     }
-    printString("Velicine adresa redom: ");
-    printInteger(reinterpret_cast<uint64>((char *) blck->prev));
-    printString("\n");
-    printInteger(blck->prev->size);
-    printString("\n");
-    printInteger(reinterpret_cast<uint64>((char *) blck));
-    printString("\n");
-    printInteger(reinterpret_cast<uint64>((char *) blck->prev + blck->prev->size));
+//    printString("Velicine adresa redom: \n");
+//    printInteger(reinterpret_cast<uint64>((char *) blck->prev));
+//    printString("\n");
+//    printInteger(blck->prev->size);
+//    printString("\n");
+//    printInteger(reinterpret_cast<uint64>((char *) blck));
+//    printString("\n");
+//    printInteger(reinterpret_cast<uint64>((char *) blck->prev + blck->prev->size + sizeof(BlockHeader)));
+//    printString("\n");
+//    printInteger(sizeof (BlockHeader));
     if(blck->next){
-        if ((char*)blck + blck->size == (char*)blck->next) {
+        if ((char*)blck + blck->size  == (char*)blck->next)  {
             blck->size += blck->next->size + sizeof(BlockHeader);
-            blck->next->next->prev = blck;
-            blck->next = blck->next->next;
+            if (blck->next->next) {
+                blck->next->next->prev = blck;
+                blck->next = blck->next->next;
+            } else {
+                blck->next = nullptr;
+            }
         }
     }
 }

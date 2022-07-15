@@ -19,5 +19,7 @@ int main() {
     MemoryAllocator::FreeMemoryBlocks->printList();
     printString("\n Zauzeti: \n");
     MemoryAllocator::AllocatedMemoryBlocks->printList();
+
+
     return  0;
 }
