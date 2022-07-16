@@ -43,7 +43,7 @@ void* MemoryAllocator::mem_alloc(size_t size){
         AllocatedMemoryBlocks->putBlock(newBlck);
     }
 
-    return newBlck + sizeof(BlockHeader); // + sizeof(BlockHeader) treba da vrati pokazivac na mesto odmah posle zaglavlja? ali misim da mi to onda remeti i ostatak koda
+    return (newBlck + sizeof(BlockHeader)); // + sizeof(BlockHeader) treba da vrati pokazivac na mesto odmah posle zaglavlja? ali misim da mi to onda remeti i ostatak koda
 };
 
 int MemoryAllocator::mem_free(void* ptr){

@@ -7,7 +7,7 @@
 
 #include "../lib/hw.h"
 
-#include "syscall_c.h"
+#include "syscall_c.hpp"
 
 void *operator new (size_t size);
 void operator delete (void* p);

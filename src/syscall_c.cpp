@@ -1,7 +1,7 @@
 //
 // Created by os on 7/15/22.
 //
-#include "../h/syscall_c.h"
+#include "../h/syscall_c.hpp"
 #include "../h/MemoryAllocator.hpp" //neki trapHandler koji nmp sta treba da radi pogledaj upustvo na drivu
 
 enum ABI_Codes {MEM_ALLOC = 0x01, MEM_FREE = 0x02};
