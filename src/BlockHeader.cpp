@@ -14,12 +14,14 @@ void BlockHeader::putBlock(BlockHeader* newBlck) {
         first->prev = newBlck;
         newBlck->next = first;
         first = newBlck;
+        this->join(newBlck);
         return;
     } else if (last) {
         if (newBlck >= last){
             last->next = newBlck;
             newBlck->prev = last;
             last = newBlck;
+            this->join(newBlck);
             return;
         }
         BlockHeader* current = first;
@@ -31,6 +33,7 @@ void BlockHeader::putBlock(BlockHeader* newBlck) {
                 newBlck->prev = current->prev;
                 current->prev = newBlck;
                 newBlck->next = current;
+                this->join(newBlck);
                 return;
             }
             current = current->next;
@@ -54,7 +57,10 @@ void BlockHeader::init(BlockHeader *address) {
 void BlockHeader::removeBlock(BlockHeader *Blck) {
     if (Blck == first){
         first = first->next;
-        if (first == nullptr) last= nullptr;
+        if (first == nullptr){
+            last= nullptr; //mozda treba nekako i sam pokazivac na nullptr kad ga ispraznim tj allocated
+            this->size = 0;
+        }
     } else if (Blck == last){
         last = last->prev;
     }
@@ -83,7 +89,7 @@ void BlockHeader::printList() {
     }
 }
 
-void BlockHeader::join(BlockHeader *blck) {
+void BlockHeader::join(BlockHeader *blck) { //mislim da moram da dodam while dok moze da ih spaja, ako dodje neki sto popunjava rupu
     if (blck == first && blck == last) return;
     if (blck->prev) {
         if ((char*)blck->prev + blck->prev->size == (char*)blck ) { //mozda nesto treba da se castuje????

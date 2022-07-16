@@ -24,12 +24,11 @@ void* MemoryAllocator::mem_alloc(size_t size){
     size_t remaining = current->size - size;
     if (remaining >= sizeof (BlockHeader) + MEM_BLOCK_SIZE){
         if (AllocatedMemoryBlocks == nullptr) {
-            AllocatedMemoryBlocks = (BlockHeader *) ((char*) current + remaining - sizeof(BlockHeader)); //meni ova linija setuje first na 101010.... zasto?
+            AllocatedMemoryBlocks = (BlockHeader *) ((char*) current + remaining); //meni ova linija setuje first na 101010.... zasto?
             AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->last = nullptr;
         }
-        newBlck = (BlockHeader*)((char*)current+remaining-sizeof (BlockHeader));
+        newBlck = (BlockHeader*)((char*)current+remaining);
         newBlck->size = size;
-        printInteger(newBlck->size);
         newBlck->next = nullptr;
         newBlck->prev = nullptr;
         AllocatedMemoryBlocks->putBlock(newBlck);
@@ -39,11 +38,12 @@ void* MemoryAllocator::mem_alloc(size_t size){
         FreeMemoryBlocks->removeBlock(current);
         if (AllocatedMemoryBlocks == nullptr){
             AllocatedMemoryBlocks = (BlockHeader*)(current + remaining - sizeof (BlockHeader));
+            AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->last = nullptr;
         }
         AllocatedMemoryBlocks->putBlock(newBlck);
     }
 
-    return (newBlck + sizeof(BlockHeader)); // + sizeof(BlockHeader) treba da vrati pokazivac na mesto odmah posle zaglavlja? ali misim da mi to onda remeti i ostatak koda
+    return ((char*)newBlck + sizeof(BlockHeader));
 };
 
 int MemoryAllocator::mem_free(void* ptr){
@@ -51,19 +51,19 @@ int MemoryAllocator::mem_free(void* ptr){
         MemoryAllocator::init();
     }
     if (AllocatedMemoryBlocks == nullptr) return -1;
-    BlockHeader* blck = (BlockHeader*)ptr - sizeof(BlockHeader);
+    BlockHeader* blck = (BlockHeader*)((char*)ptr - sizeof(BlockHeader));
     AllocatedMemoryBlocks->removeBlock(blck);
     blck->next = nullptr;
     blck->prev = nullptr;
     FreeMemoryBlocks->putBlock((BlockHeader*) blck);
-    FreeMemoryBlocks->join((BlockHeader*)blck);
+    //FreeMemoryBlocks->join((BlockHeader*)blck);
     return 0;
 };
 
 void MemoryAllocator::init() {
     BlockHeader* initBlock = (BlockHeader*) HEAP_START_ADDR;
     initBlock->next = initBlock->prev = nullptr;
-    initBlock->size = (char*)HEAP_END_ADDR - (char*)HEAP_START_ADDR - 1;
+    initBlock->size = (char*)HEAP_END_ADDR - (char*)HEAP_START_ADDR - 1 - sizeof (BlockHeader);
     FreeMemoryBlocks = (BlockHeader*) HEAP_START_ADDR;
     FreeMemoryBlocks->putBlock(initBlock);
     initialize = true;
