@@ -5,27 +5,19 @@
 #include "../h/BlockHeader.hpp"
 #include "../h/print.hpp"
 
-void BlockHeader::putBlock(BlockHeader* newBlck) {
-    if (newBlck == nullptr) return;
-    if (!first) {
+BlockHeader* BlockHeader::putBlock(BlockHeader* newBlck) {
+    if (newBlck == nullptr) return nullptr;
+    if (first == nullptr) {
         last = first = newBlck;
-        return;
+        return newBlck;
     } else if (newBlck < first){
         first->prev = newBlck;
         newBlck->next = first;
         first = newBlck;
-        this->join(newBlck);
-        return;
-    } else if (last) {
-        if (newBlck >= last){
-            last->next = newBlck;
-            newBlck->prev = last;
-            last = newBlck;
-            this->join(newBlck);
-            return;
-        }
+        return newBlck;
+    } else {
         BlockHeader* current = first;
-        while (current->next){
+        while (current){
             if (newBlck < current){
                 if (current->prev!= nullptr) {
                     current->prev->next = newBlck;
@@ -33,33 +25,23 @@ void BlockHeader::putBlock(BlockHeader* newBlck) {
                 newBlck->prev = current->prev;
                 current->prev = newBlck;
                 newBlck->next = current;
-                this->join(newBlck);
-                return;
+                return first;
             }
             current = current->next;
         }
     }
-}
-size_t BlockHeader::getList() {
-    if (!first) return -1;
-    size_t size = first->size;
-    return size;
+    last->next = newBlck;
+    newBlck->prev = last;
+    last = newBlck;
+    return first;
+
 }
 
-void BlockHeader::init(BlockHeader *address) {
-    if (address == nullptr) { //i would check first!=nullptr also but it breaks?
-        return;
-    }
-    first = last = address;
-   // return first; //maybe void as return value?
-}
-
-void BlockHeader::removeBlock(BlockHeader *Blck) {
+BlockHeader* BlockHeader::removeBlock(BlockHeader *Blck) {
     if (Blck == first){
         first = first->next;
-        if (first == nullptr){
-            last= nullptr; //mozda treba nekako i sam pokazivac na nullptr kad ga ispraznim tj allocated
-            this->size = 0;
+        if (first == nullptr) {
+            last = nullptr;
         }
     } else if (Blck == last){
         last = last->prev;
@@ -68,6 +50,7 @@ void BlockHeader::removeBlock(BlockHeader *Blck) {
         Blck->prev->next = Blck->next;
     if (Blck->next)
         Blck->next->prev = Blck->prev;
+    return first;
 }
 
 BlockHeader::BlockHeader() {
@@ -89,39 +72,13 @@ void BlockHeader::printList() {
     }
 }
 
-void BlockHeader::join(BlockHeader *blck) { //mislim da moram da dodam while dok moze da ih spaja, ako dodje neki sto popunjava rupu
-    if (blck == first && blck == last) return;
-    if (blck->prev) {
-        if ((char*)blck->prev + blck->prev->size == (char*)blck ) { //mozda nesto treba da se castuje????
-            blck->prev->size += blck->size + sizeof(BlockHeader); //imam razliku 190 i onda ne dolazi do spajanja blokova????
-            if (blck->next)
-                blck->next->prev = blck->prev;
-
-            blck->prev->next = blck->next;
-            blck = blck->prev;
+void BlockHeader::joinFreeBlocks() {
+    BlockHeader* current = first;
+    while (current->next && ((char*)current + current->size + sizeof (BlockHeader) >= (char*)current->next)){
+        current->size += current->next->size + sizeof(BlockHeader);
+        if (current->next->next) {
+            current->next->next->prev = current;
         }
-    }
-//    printString("Velicine adresa redom: \n");
-//    printInteger(reinterpret_cast<uint64>((char *) blck->prev));
-//    printString("\n");
-//    printInteger(blck->prev->size);
-//    printString("\n");
-//    printInteger(reinterpret_cast<uint64>((char *) blck));
-//    printString("\n");
-//    printInteger(reinterpret_cast<uint64>((char *) blck->prev + blck->prev->size + sizeof(BlockHeader)));
-//    printString("\n");
-//    printInteger(sizeof (BlockHeader));
-    if(blck->next){
-        if ((char*)blck + blck->size  == (char*)blck->next)  {
-            blck->size += blck->next->size + sizeof(BlockHeader);
-            if (blck->next->next) {
-                blck->next->next->prev = blck;
-                blck->next = blck->next->next;
-            } else {
-                blck->next = nullptr;
-            }
-        }
+        current->next = current->next->next;
     }
 }
-
-

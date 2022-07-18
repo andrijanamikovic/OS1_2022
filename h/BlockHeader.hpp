@@ -10,13 +10,11 @@
 class BlockHeader {
 public:
     BlockHeader();
-    void putBlock(BlockHeader* newBlck);
-    void removeBlock(BlockHeader* Blck);
-    size_t getList();
-    void init(BlockHeader* address);
+    BlockHeader* putBlock(BlockHeader* newBlck);
+    BlockHeader* removeBlock(BlockHeader* Blck);
     void printList();
-    void join(BlockHeader* blck);
-
+//    void join(BlockHeader* blck);
+    void joinFreeBlocks();
 protected:
     size_t size;
     BlockHeader* next;

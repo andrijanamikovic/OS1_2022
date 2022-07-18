@@ -1,46 +1,55 @@
-//
-// Created by os on 6/18/22.
-//
-
-#include "../h/print.hpp"
 #include "../lib/hw.h"
-#include "../h/MemoryAllocator.hpp"
 #include "../lib/console.h"
+#include "../h/MemoryAllocator.hpp"
+
+void checkNullptr(void* p) {
+    static int x = 0;
+    if(p == nullptr) {
+        __putc('?');
+        __putc('0' + x);
+    }
+    x++;
+}
+
+void checkStatus(int status) {
+    static int y = 0;
+    if(status) {
+        __putc('0' + y);
+        __putc('?');
+    }
+    y++;
+}
+
 int main() {
-//    printInteger(MemoryAllocator::getFirst());
-//    printString("\n");
-//    MemoryAllocator::mem_alloc(50);
-//    void* p = MemoryAllocator::mem_alloc(100);
-//    MemoryAllocator::mem_alloc(150);
-//    MemoryAllocator::FreeMemoryBlocks->printList();
-//    printString("\n Zauzeti: \n");
-//    MemoryAllocator::AllocatedMemoryBlocks->printList();
-//    printString("After deleting \n");
-//    MemoryAllocator::mem_free(p);
-//    MemoryAllocator::FreeMemoryBlocks->printList();
-//    printString("\n Zauzeti: \n");
-//    MemoryAllocator::AllocatedMemoryBlocks->printList();
-    int n = 10;
-    char* niz = (char*)MemoryAllocator::mem_alloc(10*sizeof(char));
-    if(niz == nullptr) {
-        __putc('?');
+    int n = 16;
+    char** matrix = (char**)MemoryAllocator::mem_alloc(n*sizeof(char*));
+    checkNullptr(matrix);
+    for(int i = 0; i < n; i++) {
+        matrix[i] = (char *) MemoryAllocator::mem_alloc(n * sizeof(char));
+        checkNullptr(matrix[i]);
     }
 
     for(int i = 0; i < n; i++) {
-        niz[i] = 'k';
+        for(int j = 0; j < n; j++) {
+            matrix[i][j] = 'k';
+        }
     }
 
     for(int i = 0; i < n; i++) {
-        __putc(niz[i]);
-        __putc(' ');
+        for(int j = 0; j < n; j++) {
+            __putc(matrix[i][j]);
+            __putc(' ');
+        }
+        __putc('\n');
     }
 
-    int status = MemoryAllocator::mem_free(niz);
-    if(status != 0) {
-        __putc('?');
+
+    for(int i = 0; i < n; i++) {
+        int status = MemoryAllocator::mem_free(matrix[i]);
+        checkStatus(status);
     }
+    int status = MemoryAllocator::mem_free(matrix);
+    checkStatus(status);
 
     return 0;
-
-    return  0;
 }

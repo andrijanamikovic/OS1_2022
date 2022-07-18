@@ -3,9 +3,6 @@
 //
 //
 #include "../h/MemoryAllocator.hpp"
-#include "../lib/hw.h"
-#include "../h/print.hpp"
-#include "../h/BlockHeader.hpp"
 
 BlockHeader* MemoryAllocator::FreeMemoryBlocks = nullptr;
 BlockHeader* MemoryAllocator::AllocatedMemoryBlocks = nullptr;
@@ -31,19 +28,19 @@ void* MemoryAllocator::mem_alloc(size_t size){
         newBlck->size = size;
         newBlck->next = nullptr;
         newBlck->prev = nullptr;
-        AllocatedMemoryBlocks->putBlock(newBlck);
+        AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->putBlock(newBlck);
         current->size = remaining - sizeof(BlockHeader);
     } else {
         newBlck = current;
-        FreeMemoryBlocks->removeBlock(current);
+        FreeMemoryBlocks->first = FreeMemoryBlocks->removeBlock(current);
         if (AllocatedMemoryBlocks == nullptr){
             AllocatedMemoryBlocks = (BlockHeader*)(current + remaining - sizeof (BlockHeader));
             AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->last = nullptr;
         }
-        AllocatedMemoryBlocks->putBlock(newBlck);
+        AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->putBlock(newBlck);
     }
 
-    return ((char*)newBlck + sizeof(BlockHeader));
+    return (void*)((char*)newBlck + sizeof(BlockHeader));
 };
 
 int MemoryAllocator::mem_free(void* ptr){
@@ -52,11 +49,15 @@ int MemoryAllocator::mem_free(void* ptr){
     }
     if (AllocatedMemoryBlocks == nullptr) return -1;
     BlockHeader* blck = (BlockHeader*)((char*)ptr - sizeof(BlockHeader));
-    AllocatedMemoryBlocks->removeBlock(blck);
+    AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->removeBlock(blck);
+    if (AllocatedMemoryBlocks->first==AllocatedMemoryBlocks->last && AllocatedMemoryBlocks->first == nullptr){
+        AllocatedMemoryBlocks = nullptr;
+    }
+    blck = (BlockHeader*)((char*)ptr - sizeof(BlockHeader));
     blck->next = nullptr;
     blck->prev = nullptr;
-    FreeMemoryBlocks->putBlock((BlockHeader*) blck);
-    //FreeMemoryBlocks->join((BlockHeader*)blck);
+    FreeMemoryBlocks->first = FreeMemoryBlocks->putBlock((BlockHeader*) blck);
+    FreeMemoryBlocks->joinFreeBlocks();
     return 0;
 };
 
@@ -65,14 +66,7 @@ void MemoryAllocator::init() {
     initBlock->next = initBlock->prev = nullptr;
     initBlock->size = (char*)HEAP_END_ADDR - (char*)HEAP_START_ADDR - 1 - sizeof (BlockHeader);
     FreeMemoryBlocks = (BlockHeader*) HEAP_START_ADDR;
-    FreeMemoryBlocks->putBlock(initBlock);
+    FreeMemoryBlocks->first = FreeMemoryBlocks->putBlock(initBlock);
     initialize = true;
-}
-
-uint64 MemoryAllocator::getFirst() {
-    if (initialize == false) {
-        MemoryAllocator::init();
-    }
-    return  FreeMemoryBlocks->getList();
 }
 
