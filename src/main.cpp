@@ -1,55 +1,30 @@
-#include "../lib/hw.h"
-#include "../lib/console.h"
-#include "../h/MemoryAllocator.hpp"
+#include "../h/TCB.hpp"
+#include "../h/workers.hpp"
+#include "../h/print.hpp"
 
-void checkNullptr(void* p) {
-    static int x = 0;
-    if(p == nullptr) {
-        __putc('?');
-        __putc('0' + x);
-    }
-    x++;
-}
+int main()
+{
+    TCB *coroutines[3];
 
-void checkStatus(int status) {
-    static int y = 0;
-    if(status) {
-        __putc('0' + y);
-        __putc('?');
-    }
-    y++;
-}
+    coroutines[0] = TCB::createCoroutine(nullptr);
+    TCB::running = coroutines[0];
 
-int main() {
-    int n = 16;
-    char** matrix = (char**)MemoryAllocator::mem_alloc(n*sizeof(char*));
-    checkNullptr(matrix);
-    for(int i = 0; i < n; i++) {
-        matrix[i] = (char *) MemoryAllocator::mem_alloc(n * sizeof(char));
-        checkNullptr(matrix[i]);
+    coroutines[1] = TCB::createCoroutine(workerBodyA);
+    printString("CoroutineA created\n");
+    coroutines[2] = TCB::createCoroutine(workerBodyB);
+    printString("CoroutineB created\n");
+
+    while (!(coroutines[1]->isFinished() &&
+             coroutines[2]->isFinished()))
+    {
+        TCB::yield();
     }
 
-    for(int i = 0; i < n; i++) {
-        for(int j = 0; j < n; j++) {
-            matrix[i][j] = 'k';
-        }
+    for (auto &coroutine: coroutines)
+    {
+        delete coroutine;
     }
-
-    for(int i = 0; i < n; i++) {
-        for(int j = 0; j < n; j++) {
-            __putc(matrix[i][j]);
-            __putc(' ');
-        }
-        __putc('\n');
-    }
-
-
-    for(int i = 0; i < n; i++) {
-        int status = MemoryAllocator::mem_free(matrix[i]);
-        checkStatus(status);
-    }
-    int status = MemoryAllocator::mem_free(matrix);
-    checkStatus(status);
+    printString("Finished\n");
 
     return 0;
 }

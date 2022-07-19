@@ -26,7 +26,7 @@ void operator delete (void* p);
 //private:
 //    thread_t myHandle;
 //};
-//
+
 //class Semaphore {
 //public:
 //    Semaphore (unsigned init = 1);

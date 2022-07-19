@@ -10,6 +10,12 @@
 class Riscv
 {
 public:
+    //push x3..31
+    static void  pushRegisters();
+
+    //pop x3..31
+    static void popRegisters();
+
 
     // pop sstatus.spp and sstatus.spie bits (has to be a non inline function)
     static void popSppSpie();
