@@ -22,20 +22,20 @@ void Riscv::handleSupervisorTrap()
 //        // interrupt: no; cause code: environment call from U-mode(8) or S-mode(9)
 //        uint64 sepc = r_sepc() + 4;
 //        uint64 sstatus = r_sstatus();
-//        TCB::timeSliceCounter = 0;
-//        TCB::dispatch();
+//        _thread::timeSliceCounter = 0;
+//        _thread::dispatch();
 //        w_sstatus(sstatus);
 //        w_sepc(sepc);
 //    } else if (scause == 0x8000000000000001UL)
 //    {
 //        // interrupt: yes; cause code: supervisor software interrupt (CLINT; machine timer interrupt)
-//        TCB::timeSliceCounter++;
-//        if (TCB::timeSliceCounter >= TCB::running->getTimeSlice())
+//        _thread::timeSliceCounter++;
+//        if (_thread::timeSliceCounter >= _thread::running->getTimeSlice())
 //        {
 //            uint64 sepc = r_sepc();
 //            uint64 sstatus = r_sstatus();
-//            TCB::timeSliceCounter = 0;
-//            TCB::dispatch();
+//            _thread::timeSliceCounter = 0;
+//            _thread::dispatch();
 //            w_sstatus(sstatus);
 //            w_sepc(sepc);
 //        }

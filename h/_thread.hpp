@@ -2,17 +2,16 @@
 // Created by os on 7/19/22.
 //
 
-#ifndef OS1_2022_TCB_HPP
-#define OS1_2022_TCB_HPP
+#ifndef OS1_2022__THREAD_HPP
+#define OS1_2022__THREAD_HPP
 
 #include "../lib/hw.h"
 #include "scheduler.hpp"
 
-// Coroutine Control Block
-class TCB {
+class _thread {
 public:
 
-    ~TCB() { delete[] stack; }
+    ~_thread() { delete[] stack; }
 
     bool isFinished() const { return finished; }
 
@@ -20,16 +19,21 @@ public:
 
     using Body = void (*)();
 
-    static TCB *createCoroutine(Body body);
+    static _thread *createThread(Body body, void* arg);
 
     static void yield();
 
-    static TCB *running;
-
+    static _thread *running;
+//    //added..
+//    //static void wrapper(); ono body je wrapper valjda
+//    void start();
+//    static void run();
+//    //
 private:
-    explicit TCB(Body body) :
+    _thread(Body body, void* arg) :
             body(body),
-            stack(body != nullptr ? new uint64[STACK_SIZE] : nullptr),
+            arg(arg),
+            stack(body != nullptr ? new uint64[DEFAULT_STACK_SIZE] : nullptr),
             context({body != nullptr ? (uint64) body : 0,
                      stack != nullptr ? (uint64) &stack[STACK_SIZE] : 0
                     }),
@@ -45,6 +49,7 @@ private:
     };
 
     Body body;
+    void *arg;
     uint64 *stack; //smanjuje se kako se stavljaju stvari na njega
     Context context;
     bool finished;
@@ -53,7 +58,13 @@ private:
 
     static void dispatch();
 
-    static uint64 constexpr STACK_SIZE = 1024;
+    static uint64 constexpr STACK_SIZE = DEFAULT_STACK_SIZE;
+
+    void *operator new (size_t size);
+    void *operator new[] (size_t size);
+    void operator delete (void* p);
+    void operator delete[] (void* p);
+    friend class Thread;
 };
 
-#endif //OS1_2022_TCB_HPP
+#endif //OS1_2022__THREAD_HPP

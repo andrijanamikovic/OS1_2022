@@ -6,17 +6,17 @@
 #define OS1_2022_SCHEDULER_HPP
 
 #include "list.hpp"
-class TCB;
+class _thread;
 
 class Scheduler
 {
 private:
-    static List<TCB> readyCoroutineQueue;
+    static List<_thread> readyCoroutineQueue;
 
 public:
-    static TCB *get();
+    static _thread *get();
 
-    static void put(TCB *ccb);
+    static void put(_thread *ccb);
 
 };
 
