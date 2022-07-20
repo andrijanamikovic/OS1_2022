@@ -45,3 +45,5 @@ h/Threads_C_API_test.hpp
 h/ThreadSleep_C_API_test.hpp
 h/Threads_CPP_API_test.hpp
 src/main.cpp
+h/ConsumerProducer_CPP_API_test.hpp
+h/ConsumerProducer_CPP_Sync_API_test.hpp
