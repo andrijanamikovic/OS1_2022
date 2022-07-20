@@ -37,3 +37,11 @@ src/buffer.cpp
 src/buffer_CPP_API.cpp
 src/lock.S
 src/printing.cpp
+h/buffer_CPP_API.hpp
+h/buffer.hpp
+h/ConsumerProducer_C_API_test.h
+h/printing.hpp
+h/Threads_C_API_test.hpp
+h/ThreadSleep_C_API_test.hpp
+h/Threads_CPP_API_test.hpp
+src/main.cpp
