@@ -20,11 +20,11 @@ Thread::Thread() {
 }
 
 Thread::~Thread() {
-    delete myHandle;
+    delete &myHandle;
 }
 
 int Thread::start() {
-    thread_start(&myHandle);
+    return thread_start(&myHandle);
 }
 
 void Thread::dispatch() {

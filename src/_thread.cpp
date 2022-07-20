@@ -8,11 +8,12 @@
 
 
 _thread *_thread::running = nullptr;
+uint64 _thread::timeSliceCounter = 0;
 
 _thread *_thread::createThread(Body body, void* args)
 {
     //treba da napravim novu nit ali da zovem memory allocator, u blokovima???
-
+    //mozda treba da saljem velicinu pokazivaca negde????
     return new _thread(body, args);
 }
 
@@ -43,11 +44,19 @@ void _thread::operator delete(void *p) {
 }
 
 void _thread::operator delete[](void *p) {
-
+    __mem_free(p);
 }
 
 void *_thread::operator new[](size_t size) {
-    return nullptr;
+    return __mem_alloc(size);
+}
+
+uint64 _thread::getTimeSliceCounter() {
+    return timeSliceCounter;
+}
+
+void _thread::setTimeSliceCounter(uint64 timeSliceCounter) {
+    _thread::timeSliceCounter = timeSliceCounter;
 }
 
 

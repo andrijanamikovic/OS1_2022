@@ -23,7 +23,17 @@ public:
 
     static void yield();
 
+    static uint64 getTimeSliceCounter();
+
+    static void setTimeSliceCounter(uint64 timeSliceCounter);
+
     static _thread *running;
+    static uint64 timeSliceCounter;
+
+    void *operator new (size_t size);
+    void *operator new[] (size_t size);
+    void operator delete (void* p);
+    void operator delete[] (void* p);
 //    //added..
 //    //static void wrapper(); ono body je wrapper valjda
 //    void start();
@@ -60,11 +70,9 @@ private:
 
     static uint64 constexpr STACK_SIZE = DEFAULT_STACK_SIZE;
 
-    void *operator new (size_t size);
-    void *operator new[] (size_t size);
-    void operator delete (void* p);
-    void operator delete[] (void* p);
+
     friend class Thread;
+    friend class Riscv;
 };
 
 #endif //OS1_2022__THREAD_HPP
