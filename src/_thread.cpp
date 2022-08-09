@@ -19,11 +19,7 @@ _thread *_thread::createThread(Body body, void* args)
 
 void _thread::yield()
 {
-    Riscv::pushRegisters();
-
-    _thread::dispatch();
-
-    Riscv::popRegisters();
+   __asm__ volatile("ecall");
 }
 
 void _thread::dispatch() {

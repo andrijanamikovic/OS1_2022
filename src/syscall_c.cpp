@@ -3,8 +3,7 @@
 //
 #include "../h/syscall_c.hpp"
 #include "../h/MemoryAllocator.hpp" //neki trapHandler koji nmp sta treba da radi pogledaj upustvo na drivu
-
-enum ABI_Codes {MEM_ALLOC = 0x01, MEM_FREE = 0x02, THREAD_CREATE = 0x11, THREAD_EXIT = 0x12, THREAD_DISPATCH = 0x13, THREAD_START = 0x14};
+#include "../h/AbiCodes.hpp"
 
 void invoker(int serviceId){
     __asm__ volatile ("mv a0, %0" : : "r" (serviceId));

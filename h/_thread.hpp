@@ -17,7 +17,7 @@ public:
 
     void setFinished(bool value) { finished = value; }
 
-    using Body = void (*)();
+    using Body = void (*)(); //should argument be void*???
 
     static _thread *createThread(Body body, void* arg);
 
@@ -44,10 +44,11 @@ private:
             body(body),
             arg(arg),
             stack(body != nullptr ? new uint64[DEFAULT_STACK_SIZE] : nullptr),
-            context({body != nullptr ? (uint64) body : 0,
+            context({body != nullptr ? (uint64) body : 0, //proveri da tu ne treba wrraper??? negde mozda treba da setujem finish na true
                      stack != nullptr ? (uint64) &stack[STACK_SIZE] : 0
                     }),
-            finished(false)
+            finished(false),
+            timeSlice(DEFAULT_TIME_SLICE)
     {
         if (body != nullptr) { Scheduler::put(this); }
     }
@@ -63,6 +64,7 @@ private:
     uint64 *stack; //smanjuje se kako se stavljaju stvari na njega
     Context context;
     bool finished;
+    uint64 timeSlice;
 
     static void contextSwitch(Context *oldContext, Context *runningContext);
 
@@ -76,3 +78,6 @@ private:
 };
 
 #endif //OS1_2022__THREAD_HPP
+
+//u wrraperu mozda treba negde da pozivam poopSppSpite to on radi u 7 vezbama, treba...
+//pogledaj threadWrraper u njegovom tcb-u i gde ti on treba i sta tacno predstavlja
