@@ -4,7 +4,7 @@
 
 #include "../h/scheduler.hpp"
 
-List<_thread> Scheduler::readyCoroutineQueue;
+List Scheduler::readyCoroutineQueue;
 
 _thread *Scheduler::get()
 {

@@ -91,7 +91,7 @@ public:
 private:
 
     // supervisor trap handler
-    static void handleSupervisorTrap();
+    static uint64 handleSupervisorTrap();
 
 };
 

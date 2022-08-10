@@ -55,4 +55,8 @@ void _thread::setTimeSliceCounter(uint64 timeSliceCounter) {
     _thread::timeSliceCounter = timeSliceCounter;
 }
 
+_thread*  _thread::threadInit(_thread::Body body, void *arg, uint64 *stack) {
+    return new _thread(body, arg, stack);
+}
+
 

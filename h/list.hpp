@@ -6,37 +6,38 @@
 #define OS1_VEZBE07_RISCV_CONTEXT_SWITCH_1_SYNCHRONOUS_LIST_HPP
 
 #include "./mem.h"
-template<typename T>
+
+class _thread;
+
 class List
 {
-private:
+public:
     struct Elem
     {
-        T *data;
+        _thread *data;
         Elem *next;
 
-        Elem(T *data, Elem *next) : data(data), next(next) {}
+        Elem(_thread *data, Elem *next) : data(data), next(next) {}
     };
 
     Elem *head, *tail;
 
-public:
     List() : head(0), tail(0) {}
 
-    List(const List<T> &) = delete;
+    List(const List&) = delete;
 
-    List<T> &operator=(const List<T> &) = delete;
+    List&operator=(const List&) = delete;
 
-    void addFirst(T *data)
+    void addFirst(_thread *data)
     {
         Elem *elem = new Elem(data, head);
         head = elem;
         if (!tail) { tail = head; }
     }
 
-    void addLast(T *data)
+    void addLast(_thread *data)
     {
-        Elem *elem = new Elem(data, 0);
+        Elem *elem = (Elem*) __mem_alloc(sizeof (Elem(data, 0))) ;
         if (tail)
         {
             tail->next = elem;
@@ -47,7 +48,7 @@ public:
         }
     }
 
-    T *removeFirst()
+    _thread *removeFirst()
     {
         if (!head) { return 0; }
 
@@ -55,18 +56,18 @@ public:
         head = head->next;
         if (!head) { tail = 0; }
 
-        T *ret = elem->data;
-        delete elem;
+        _thread *ret = elem->data;
+        __mem_free((void*)elem);
         return ret;
     }
 
-    T *peekFirst()
+    _thread *peekFirst()
     {
         if (!head) { return 0; }
         return head->data;
     }
 
-    T *removeLast()
+    _thread *removeLast()
     {
         if (!head) { return 0; }
 
@@ -81,16 +82,32 @@ public:
         else { head = 0; }
         tail = prev;
 
-        T *ret = elem->data;
-        delete elem;
+        _thread *ret = elem->data;
+        __mem_free((void*)elem);
         return ret;
     }
 
-    T *peekLast()
+    _thread *peekLast()
     {
         if (!tail) { return 0; }
         return tail->data;
     }
 };
+
+//void List::operator delete[](void *p) {
+//    __mem_free(p);
+//}
+//
+//void *List::operator new(size_t size) {
+//    return __mem_alloc(size);
+//}
+//
+//void *List::operator new[](size_t size) {
+//    return __mem_alloc(size);;
+//}
+//
+//void List::operator delete(void *p) {
+//    __mem_free(p);
+//}
 
 #endif //OS1_VEZBE07_RISCV_CONTEXT_SWITCH_1_SYNCHRONOUS_LIST_HPP

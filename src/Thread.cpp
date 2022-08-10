@@ -4,6 +4,7 @@
 
 #include "../h/syscall_cpp.hpp"
 #include "../h/syscall_c.hpp"
+#include "../h/riscv.hpp"
 
 
 Thread::Thread(void (*body)(void *), void *arg) {
@@ -37,5 +38,9 @@ int Thread::sleep(time_t) {
 }
 
 void Thread::wrapper(void *p) {
-    ((Thread*)p)->run();
+    Riscv::popSppSpie();
+    ((Thread*)p)->run(); //on ga negde prebacuje na body da li to treba da imam i u tcbu???
+    //da li ovde treba da sklanjam privilegije???
+    //da vratimo SPE na ono sto je bilo
+    //da li mi treba finished negde flag za nit
 }

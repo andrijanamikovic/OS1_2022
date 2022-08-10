@@ -6,12 +6,12 @@
 #define OS1_2022_SCHEDULER_HPP
 
 #include "list.hpp"
-class _thread;
-
+//class _thread;
+//class List;
 class Scheduler
 {
 private:
-    static List<_thread> readyCoroutineQueue;
+    static List readyCoroutineQueue;
 
 public:
     static _thread *get();
