@@ -12,6 +12,8 @@ class Riscv
 public:
 
 
+    static  uint64* readArgs(uint64*);
+
     //push x3..31
     static void  pushRegisters();
 
@@ -186,5 +188,7 @@ inline void Riscv::w_sstatus(uint64 sstatus)
 {
     __asm__ volatile ("csrw sstatus, %[sstatus]" : : [sstatus] "r"(sstatus));
 }
+
+
 
 #endif //OS1_VEZBE07_RISCV_CONTEXT_SWITCH_2_INTERRUPT_RISCV_HPP

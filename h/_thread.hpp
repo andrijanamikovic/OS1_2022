@@ -17,11 +17,11 @@ public:
 
     //da li ja ovde treba da imam start/finish/exit itd????
     //msm da da
+
+    enum ThreadState{
+        CREATED, RUNNING, FINISHED, SLEEPING
+    };
     ~_thread() { delete[] stack; }
-
-    bool isFinished() const { return finished; }
-
-    void setFinished(bool value) { finished = value; }
 
     using Body = void (*)(); //should argument be void*???
 
@@ -32,6 +32,8 @@ public:
     static uint64 getTimeSliceCounter();
 
     static void setTimeSliceCounter(uint64 timeSliceCounter);
+
+    static void initMain();
 
     static _thread *running;
     static uint64 timeSliceCounter;
@@ -56,7 +58,7 @@ private:
             context({body != nullptr ? (uint64) body : 0, //proveri da tu ne treba wrraper??? negde mozda treba da setujem finish na true
                      stack != nullptr ? (uint64) &stack[STACK_SIZE] : 0
                     }),
-            finished(false),
+            state(CREATED),
             timeSlice(DEFAULT_TIME_SLICE)
     {
         if (body != nullptr) { Scheduler::put(this); }
@@ -66,10 +68,10 @@ private:
             body(body),
             arg(arg),
             stack(stack),
-            context({body != nullptr ? (uint64) body : 0, //proveri da tu ne treba wrraper??? negde mozda treba da setujem finish na true
+            context({body != nullptr ? (uint64) &threadWrapper: 0, //proveri da tu ne treba wrraper??? negde mozda treba da setujem finish na true
                      stack != nullptr ? (uint64) &stack[STACK_SIZE] : 0
                     }),
-            finished(false),
+            state(CREATED),
             timeSlice(DEFAULT_TIME_SLICE)
     {
         if (body != nullptr) { Scheduler::put(this); }
@@ -85,13 +87,18 @@ private:
     void *arg;
     uint64 *stack; //smanjuje se kako se stavljaju stvari na njega
     Context context;
-    bool finished;
+    ThreadState state;
     uint64 timeSlice;
+    static _thread* main;
 
     static void contextSwitch(Context *oldContext, Context *runningContext);
 
     static void dispatch();
+    int start();
+    static int exit();
+    static int sleep(time_t timeout);
 
+    static void threadWrapper();
 
     static uint64 constexpr STACK_SIZE = DEFAULT_STACK_SIZE;
 

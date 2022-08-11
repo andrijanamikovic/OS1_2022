@@ -5,10 +5,11 @@
 #include "../h/_thread.hpp"
 #include "../h/riscv.hpp"
 #include "../h/mem.h"
-
+#include "../h/syscall_c.hpp"
 
 _thread *_thread::running = nullptr;
 uint64 _thread::timeSliceCounter = 0;
+_thread* _thread::main = nullptr;
 
 _thread *_thread::createThread(Body body, void* args)
 {
@@ -24,8 +25,11 @@ void _thread::yield()
 
 void _thread::dispatch() {
     _thread *old = running;
-    if (!old->isFinished()) { Scheduler::put(old); }
+    if (old->state!=FINISHED) {
+        Scheduler::put(old);
+    }
     running = Scheduler::get();
+    running->state = RUNNING;
 
     _thread::contextSwitch(&old->context, &running->context);
 
@@ -57,6 +61,40 @@ void _thread::setTimeSliceCounter(uint64 timeSliceCounter) {
 
 _thread*  _thread::threadInit(_thread::Body body, void *arg, uint64 *stack) {
     return new _thread(body, arg, stack);
+}
+
+int _thread::start() {
+    if (state!=CREATED){
+        return -3;
+    }
+    Scheduler::put(this);
+    return 0;
+}
+
+int _thread::exit() {
+    running->state = FINISHED;
+    dispatch();
+    return 0;
+}
+
+int _thread::sleep(time_t timeout) {
+    running->state = SLEEPING;
+    //waiting list neki
+    //waitingList.add(running,timeout);
+    dispatch();
+    return 0;
+}
+
+void _thread::threadWrapper() {
+    Riscv::popSppSpie();
+//    running->body(running->arg);
+    thread_exit();
+}
+
+void _thread::initMain() {
+    if (main) return;
+    running = new _thread(nullptr, nullptr);
+    running->state = RUNNING;
 }
 
 

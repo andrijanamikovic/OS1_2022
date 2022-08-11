@@ -40,6 +40,7 @@ int Thread::sleep(time_t) {
 void Thread::wrapper(void *p) {
     Riscv::popSppSpie();
     ((Thread*)p)->run(); //on ga negde prebacuje na body da li to treba da imam i u tcbu???
+
     //da li ovde treba da sklanjam privilegije???
     //da vratimo SPE na ono sto je bilo
     //da li mi treba finished negde flag za nit

@@ -2,7 +2,7 @@
 // Created by os on 7/15/22.
 //
 #include "../h/syscall_c.hpp"
-#include "../h/MemoryAllocator.hpp" //neki trapHandler koji nmp sta treba da radi pogledaj upustvo na drivu
+#include "../h/MemoryAllocator.hpp"
 #include "../h/AbiCodes.hpp"
 
 void invoker(int serviceId){
@@ -29,7 +29,7 @@ int mem_free(void* p){
     invoker(MEM_FREE);
     uint64 volatile ret;
     __asm__ volatile ("mv %0, a0" : "=r" (ret));
-    return (ret == 0 ? 0 : -2);
+    return (ret > 0 ? 0 : -2);
 }
 
 int thread_create(thread_t *handle,  void(*start_routine)(void*), void* arg){
@@ -42,7 +42,7 @@ int thread_create(thread_t *handle,  void(*start_routine)(void*), void* arg){
     invoker(THREAD_CREATE);
     uint64 volatile ret;
     __asm__ volatile ("mv %0, a0" : "=r" (ret));
-    return (ret == 0 ? 0 : -2);
+    return (ret > 0 ? 0 : -2);
 }
 
 int thread_start(thread_t *handle){
@@ -54,13 +54,13 @@ int thread_start(thread_t *handle){
     invoker(THREAD_START);
     uint64 volatile ret;
     __asm__ volatile ("mv %0, a0" : "=r" (ret));
-    return (ret == 0 ? 0 : -2);
+    return (ret > 0 ? 0 : -2);
 }
 int thread_exit(){
     invoker(THREAD_EXIT);
     uint64 volatile ret;
     __asm__ volatile ("mv %0, a0" : "=r" (ret));
-    return (ret == 0 ? 0 : -1);
+    return (ret > 0 ? 0 : -1);
 }
 void thread_dispatch(){
     invoker(THREAD_DISPATCH);
