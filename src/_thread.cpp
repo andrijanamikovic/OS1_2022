@@ -6,6 +6,7 @@
 #include "../h/riscv.hpp"
 #include "../h/mem.h"
 #include "../h/syscall_c.hpp"
+#include "../test/printing.hpp"
 
 _thread *_thread::running = nullptr;
 uint64 _thread::timeSliceCounter = 0;
@@ -13,8 +14,6 @@ _thread* _thread::main = nullptr;
 
 _thread *_thread::createThread(Body body, void* args)
 {
-    //treba da napravim novu nit ali da zovem memory allocator, u blokovima???
-    //mozda treba da saljem velicinu pokazivaca negde????
     return new _thread(body, args);
 }
 
@@ -25,12 +24,22 @@ void _thread::yield()
 
 void _thread::dispatch() {
     _thread *old = running;
-    if (old->state!=FINISHED) {
+    if (old->state!=FINISHED && old!=main) {
         Scheduler::put(old);
     }
-    running = Scheduler::get();
-    running->state = RUNNING;
-
+    _thread* current = Scheduler::get();
+//    printString("\n Adresa current iz schedulera je  je: ");
+//    printInt((uint64 )current);
+    running = current;
+    if (running){
+//        printString("\n Adresa runninga je: ");
+//        printInt((uint64 )running);
+//        printString("\n Heap end: ");
+//        printInt((uint64)HEAP_END_ADDR);
+        running->state = RUNNING;
+    } else {
+        running = main;
+    }
     _thread::contextSwitch(&old->context, &running->context);
 
 }
@@ -67,7 +76,8 @@ int _thread::start() {
     if (state!=CREATED){
         return -3;
     }
-    Scheduler::put(this);
+    if (this!=main)
+        Scheduler::put(this);
     return 0;
 }
 
@@ -88,6 +98,7 @@ int _thread::sleep(time_t timeout) {
 void _thread::threadWrapper() {
     Riscv::popSppSpie();
 //    running->body(running->arg);
+    running->body();
     thread_exit();
 }
 
@@ -95,6 +106,8 @@ void _thread::initMain() {
     if (main) return;
     running = new _thread(nullptr, nullptr);
     running->state = RUNNING;
+//    printString("\n Adresa runninga maina je: ");
+//    printInt((uint64)running);
 }
 
 

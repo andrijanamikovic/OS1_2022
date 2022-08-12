@@ -21,7 +21,7 @@ public:
     int start ();
     static void dispatch ();
     static int sleep (time_t);
-    static void wrapper(void* p);
+    static void wrapper(void *p);
 protected:
     Thread ();
     virtual void run () {}

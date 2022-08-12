@@ -44,11 +44,11 @@ h/printing.hpp
 h/Threads_C_API_test.hpp
 h/ThreadSleep_C_API_test.hpp
 h/Threads_CPP_API_test.hpp
-test/main.cpp
+src/main.cpp
 h/ConsumerProducer_CPP_API_test.hpp
 h/ConsumerProducer_CPP_Sync_API_test.hpp
 test/lock.S
-test/main.cpp
+src/main.cpp
 test/printing.cpp
 test/printing.hpp
 test/Threads_C_API_test.hpp

@@ -6,6 +6,7 @@
 #define OS1_VEZBE07_RISCV_CONTEXT_SWITCH_1_SYNCHRONOUS_LIST_HPP
 
 #include "./mem.h"
+#include "../test/printing.hpp"
 
 class _thread;
 
@@ -38,6 +39,9 @@ public:
     void addLast(_thread *data)
     {
         Elem *elem = (Elem*) __mem_alloc(sizeof (Elem(data, 0))) ;
+        elem->data = data;
+//        printString("\n Adresa elementa koji se dodaje u listu schedulera: ");
+//        printInt((uint64)elem->data);
         if (tail)
         {
             tail->next = elem;
