@@ -18,3 +18,7 @@ void Scheduler::put(_thread *ccb)
 {
     readyCoroutineQueue.addLast(ccb);
 }
+
+void Scheduler::printScheduler() {
+    readyCoroutineQueue.printList();
+}

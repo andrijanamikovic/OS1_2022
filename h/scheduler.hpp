@@ -17,6 +17,7 @@ public:
     static _thread *get();
 
     static void put(_thread *ccb);
+    static void printScheduler();
 
 };
 

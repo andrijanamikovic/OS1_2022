@@ -7,6 +7,7 @@
 
 #include "../lib/hw.h"
 #include "scheduler.hpp"
+#include "../h/MemoryAllocator.hpp"
 
 
 class _thread {
@@ -23,17 +24,20 @@ public:
     };
     ~_thread() { delete[] stack; }
 
-    using Body = void (*)(); //should argument be void*???
+    using Body = void (*)(void*);
+
+    bool isFinished();
 
     static _thread *createThread(Body body, void* arg);
 
     static void yield();
+    int start();
 
     static uint64 getTimeSliceCounter();
 
     static void setTimeSliceCounter(uint64 timeSliceCounter);
 
-    static void initMain();
+    static _thread* initMain();
 
     static _thread *running;
     static uint64 timeSliceCounter;
@@ -50,16 +54,18 @@ public:
 //    void start();
 //    static void run();
 //    //
+
 private:
     _thread(Body body, void* arg) :
             body(body),
             arg(arg),
-            stack(body != nullptr ? new uint64[DEFAULT_STACK_SIZE] : nullptr),
+            stack(body != nullptr ? (uint64 *)MemoryAllocator::mem_alloc(DEFAULT_STACK_SIZE * sizeof (uint64)) : nullptr),
             context({body != nullptr ? (uint64) body : 0, //proveri da tu ne treba wrraper??? negde mozda treba da setujem finish na true
                      stack != nullptr ? (uint64) &stack[STACK_SIZE] : 0
                     }),
             state(CREATED),
-            timeSlice(DEFAULT_TIME_SLICE)
+            timeSlice(DEFAULT_TIME_SLICE),
+            mainFlag(false)
     {
         if (body != nullptr) {
             Scheduler::put(this);
@@ -74,7 +80,8 @@ private:
                      stack != nullptr ? (uint64) &stack[STACK_SIZE] : 0
                     }),
             state(CREATED),
-            timeSlice(DEFAULT_TIME_SLICE)
+            timeSlice(DEFAULT_TIME_SLICE),
+            mainFlag(false)
     {
         if (body != nullptr) {
             Scheduler::put(this);
@@ -94,13 +101,16 @@ private:
     ThreadState state;
     uint64 timeSlice;
     static _thread* main;
+    bool mainFlag;
+
 
     static void contextSwitch(Context *oldContext, Context *runningContext);
 
-    static void dispatch();
-    int start();
+
+
     static int exit();
     static int sleep(time_t timeout);
+    static void dispatch();
 
     static void threadWrapper();
 

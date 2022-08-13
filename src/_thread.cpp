@@ -19,17 +19,23 @@ _thread *_thread::createThread(Body body, void* args)
 
 void _thread::yield()
 {
-   __asm__ volatile("ecall");
+//   __asm__ volatile("ecall");
+    dispatch();
 }
 
 void _thread::dispatch() {
+//    printString("\n Lista iz schedulera na pocetku dispatcha: \n");
+//    Scheduler::printScheduler();
     _thread *old = running;
-    if (old->state!=FINISHED && old!=main) {
+    if (old->state!=FINISHED && !old->mainFlag) { //bez provere dal je main?
         Scheduler::put(old);
     }
+
     _thread* current = Scheduler::get();
 //    printString("\n Adresa current iz schedulera je  je: ");
 //    printInt((uint64 )current);
+//    printString("\n Lista iz schedulera na kraju dispatcha: \n");
+//    Scheduler::printScheduler();
     running = current;
     if (running){
 //        printString("\n Adresa runninga je: ");
@@ -87,7 +93,7 @@ int _thread::exit() {
     return 0;
 }
 
-int _thread::sleep(time_t timeout) {
+int _thread::sleep(time_t timeout) { //to do...
     running->state = SLEEPING;
     //waiting list neki
     //waitingList.add(running,timeout);
@@ -97,17 +103,28 @@ int _thread::sleep(time_t timeout) {
 
 void _thread::threadWrapper() {
     Riscv::popSppSpie();
-//    running->body(running->arg);
-    running->body();
-    thread_exit();
+//    running->body(running->arg); //fedja ima ovu liniju ja ne znam kako ona da proradi kako treba
+    running->body(running->arg);
+    running->state = FINISHED;
+//    exit();
+    yield(); //to nzm dal mi treba on ima na vezbama???
+
+//    thread_exit();
 }
 
-void _thread::initMain() {
-    if (main) return;
+_thread* _thread::initMain() {
+    if (main) return main;
     running = new _thread(nullptr, nullptr);
     running->state = RUNNING;
+    main = running;
+    running->mainFlag = true;
+    return running;
 //    printString("\n Adresa runninga maina je: ");
 //    printInt((uint64)running);
+}
+
+bool _thread::isFinished() {
+    return running->state==FINISHED;
 }
 
 

@@ -12,7 +12,6 @@ class _thread;
 
 class List
 {
-public:
     struct Elem
     {
         _thread *data;
@@ -22,8 +21,10 @@ public:
     };
 
     Elem *head, *tail;
+public:
 
-    List() : head(0), tail(0) {}
+
+    List() : head(nullptr), tail(nullptr) {}
 
     List(const List&) = delete;
 
@@ -31,15 +32,45 @@ public:
 
     void addFirst(_thread *data)
     {
-        Elem *elem = new Elem(data, head);
+        Elem *elem = (Elem*) __mem_alloc(sizeof (Elem)) ;
+        elem->data = data;
+        elem->next = head;
         head = elem;
         if (!tail) { tail = head; }
     }
 
+    _thread *removeFirst()
+    {
+        if (!head) { return 0; }
+
+        Elem *elem = head;
+//
+//        printString("\n Adresa elementa koji se vadi iz schedulera: ");
+//        printInt((uint64)(elem->data));
+        head = head->next;
+        if (!head) { tail = 0; }
+
+        _thread *ret = elem->data;
+        __mem_free((void*)elem);
+        return ret;
+
+//        if (head == nullptr) { return 0; }
+//        printString("Puca pre dodeljivanja elem -> head");
+//        Elem *elem = head;
+//        printString("\n Adresa elementa koji se vadi iz schedulera: ");
+//        printInt((uint64)elem->data);
+//        head = head->next;
+//        if (head== nullptr) { tail = 0; }
+//        _thread *ret = elem->data;
+//        __mem_free((void*)elem);
+//        return ret;
+    }
+
     void addLast(_thread *data)
     {
-        Elem *elem = (Elem*) __mem_alloc(sizeof (Elem(data, 0))) ;
+        Elem *elem = (Elem*) __mem_alloc(sizeof (Elem)) ;
         elem->data = data;
+        elem->next = nullptr;
 //        printString("\n Adresa elementa koji se dodaje u listu schedulera: ");
 //        printInt((uint64)elem->data);
         if (tail)
@@ -52,18 +83,7 @@ public:
         }
     }
 
-    _thread *removeFirst()
-    {
-        if (!head) { return 0; }
 
-        Elem *elem = head;
-        head = head->next;
-        if (!head) { tail = 0; }
-
-        _thread *ret = elem->data;
-        __mem_free((void*)elem);
-        return ret;
-    }
 
     _thread *peekFirst()
     {
@@ -96,22 +116,17 @@ public:
         if (!tail) { return 0; }
         return tail->data;
     }
-};
+    void printList(){
+        Elem* current = head;
+//        int i = 0;
+        while (current) {
+            printString("\n Adresa i-tog elementa liste je: ");
+            _thread* data = current->data;
+            printInt((uint64) (data));
+            current = current->next;
+        }
 
-//void List::operator delete[](void *p) {
-//    __mem_free(p);
-//}
-//
-//void *List::operator new(size_t size) {
-//    return __mem_alloc(size);
-//}
-//
-//void *List::operator new[](size_t size) {
-//    return __mem_alloc(size);;
-//}
-//
-//void List::operator delete(void *p) {
-//    __mem_free(p);
-//}
+    }
+};
 
 #endif //OS1_VEZBE07_RISCV_CONTEXT_SWITCH_1_SYNCHRONOUS_LIST_HPP

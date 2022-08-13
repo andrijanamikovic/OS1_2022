@@ -21,7 +21,7 @@ Thread::Thread() {
 }
 
 Thread::~Thread() {
-    delete &myHandle;
+    delete &myHandle; //mozda moram iz _thread neki delete?
 }
 
 int Thread::start() {
@@ -34,7 +34,7 @@ void Thread::dispatch() {
 }
 
 int Thread::sleep(time_t) {
-    return 0;
+    return 0; //ovo mi nije otkucano....
 }
 
 void Thread::wrapper(void *p) {
