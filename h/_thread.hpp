@@ -27,6 +27,7 @@ public:
     using Body = void (*)(void*);
 
     bool isFinished();
+    void setFinished(bool finished);
 
     static _thread *createThread(Body body, void* arg);
 
@@ -49,6 +50,7 @@ public:
     void operator delete (void* p);
     void operator delete[] (void* p);
     friend class List;
+    static _thread* main;
 //    //added..
 //    //static void wrapper(); ono body je wrapper valjda
 //    void start();
@@ -100,7 +102,7 @@ private:
     Context context;
     ThreadState state;
     uint64 timeSlice;
-    static _thread* main;
+
     bool mainFlag;
 
 

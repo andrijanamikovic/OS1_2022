@@ -27,26 +27,28 @@ void _thread::dispatch() {
 //    printString("\n Lista iz schedulera na pocetku dispatcha: \n");
 //    Scheduler::printScheduler();
     _thread *old = running;
-    if (old->state!=FINISHED && !old->mainFlag) { //bez provere dal je main?
+    if (old->state==RUNNING && !old->mainFlag) { //bez provere dal je main?
         Scheduler::put(old);
     }
 
-    _thread* current = Scheduler::get();
+    running = Scheduler::get();
 //    printString("\n Adresa current iz schedulera je  je: ");
 //    printInt((uint64 )current);
 //    printString("\n Lista iz schedulera na kraju dispatcha: \n");
 //    Scheduler::printScheduler();
-    running = current;
+//    running = current;
     if (running){
-//        printString("\n Adresa runninga je: ");
-//        printInt((uint64 )running);
-//        printString("\n Heap end: ");
-//        printInt((uint64)HEAP_END_ADDR);
+////        printString("\n Adresa runninga je: ");
+////        printInt((uint64 )running);
+////        printString("\n Heap end: ");
+////        printInt((uint64)HEAP_END_ADDR);
         running->state = RUNNING;
     } else {
         running = main;
     }
-    _thread::contextSwitch(&old->context, &running->context);
+    if (running) {
+        _thread::contextSwitch(&old->context, &running->context);
+    }
 
 }
 
@@ -103,6 +105,7 @@ int _thread::sleep(time_t timeout) { //to do...
 
 void _thread::threadWrapper() {
     Riscv::popSppSpie();
+    running->state = RUNNING;
 //    running->body(running->arg); //fedja ima ovu liniju ja ne znam kako ona da proradi kako treba
     running->body(running->arg);
     running->state = FINISHED;
@@ -125,6 +128,12 @@ _thread* _thread::initMain() {
 
 bool _thread::isFinished() {
     return running->state==FINISHED;
+}
+
+void _thread::setFinished(bool value) {
+    if (value) {
+        this->state = FINISHED;
+    }
 }
 
 

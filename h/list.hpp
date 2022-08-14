@@ -41,29 +41,18 @@ public:
 
     _thread *removeFirst()
     {
-        if (!head) { return 0; }
+        if (!head) { return nullptr; }
 
         Elem *elem = head;
 //
 //        printString("\n Adresa elementa koji se vadi iz schedulera: ");
 //        printInt((uint64)(elem->data));
         head = head->next;
-        if (!head) { tail = 0; }
+        if (head == nullptr) { tail = nullptr; }
 
         _thread *ret = elem->data;
-        __mem_free((void*)elem);
+        __mem_free(elem);
         return ret;
-
-//        if (head == nullptr) { return 0; }
-//        printString("Puca pre dodeljivanja elem -> head");
-//        Elem *elem = head;
-//        printString("\n Adresa elementa koji se vadi iz schedulera: ");
-//        printInt((uint64)elem->data);
-//        head = head->next;
-//        if (head== nullptr) { tail = 0; }
-//        _thread *ret = elem->data;
-//        __mem_free((void*)elem);
-//        return ret;
     }
 
     void addLast(_thread *data)
@@ -119,6 +108,8 @@ public:
     void printList(){
         Elem* current = head;
 //        int i = 0;
+        printString("Head is: ");
+        printInt((uint64)head);
         while (current) {
             printString("\n Adresa i-tog elementa liste je: ");
             _thread* data = current->data;
