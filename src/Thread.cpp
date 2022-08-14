@@ -8,20 +8,15 @@
 
 
 Thread::Thread(void (*body)(void *), void *arg) {
-    thread_create(&myHandle,body,arg); //mozda run treba?
-    //konstrukror iz CCB?
-    //i stavljam u scheduler
+    thread_create(&myHandle,body,arg);
 }
 
 Thread::Thread() {
     thread_create(&myHandle,wrapper,this);
-    //isto ali ne u scheduler
-    //konstrukror iz CCB?
-    //a ovde umesto body stavljam wraper a ne run
 }
 
 Thread::~Thread() {
-    delete &myHandle; //mozda moram iz _thread neki delete?
+    delete &myHandle;
 }
 
 int Thread::start() {
@@ -29,7 +24,6 @@ int Thread::start() {
 }
 
 void Thread::dispatch() {
-    //dispatch iz C API a on iz CCB
     thread_dispatch();
 }
 
@@ -38,9 +32,5 @@ int Thread::sleep(time_t) {
 }
 
 void Thread::wrapper(void *p) {
-    ((Thread*)p)->run(); //on ga negde prebacuje na body da li to treba da imam i u tcbu???
-
-    //da li ovde treba da sklanjam privilegije???
-    //da vratimo SPE na ono sto je bilo
-    //da li mi treba finished negde flag za nit
+    ((Thread*)p)->run();
 }

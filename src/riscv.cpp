@@ -119,10 +119,6 @@ uint64 Riscv::handleSupervisorTrap()
         printString("\n Stval: ");
         printInt(r_stval());
         printString("\n\n\n");
-        // unexpected trap cause
-        //print scause
-        //print sepcc
-        //print steval
     }
     return retval;
 }

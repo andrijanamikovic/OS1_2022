@@ -6,7 +6,7 @@
 #include "../h/riscv.hpp"
 #include "../h/mem.h"
 #include "../h/syscall_c.hpp"
-#include "../test/printing.hpp"
+
 
 _thread *_thread::running = nullptr;
 uint64 _thread::timeSliceCounter = 0;
@@ -24,8 +24,6 @@ void _thread::yield()
 }
 
 void _thread::dispatch() {
-//    printString("\n Lista iz schedulera na pocetku dispatcha: \n");
-//    Scheduler::printScheduler();
     _thread *old = running;
     if (old->state==RUNNING && !old->mainFlag) {
         Scheduler::put(old);
@@ -104,13 +102,9 @@ int _thread::sleep(time_t timeout) { //to do...
 void _thread::threadWrapper() {
     Riscv::popSppSpie();
     running->state = RUNNING;
-//    running->body(running->arg); //fedja ima ovu liniju ja ne znam kako ona da proradi kako treba
     running->body(running->arg);
     running->state = FINISHED;
-//    exit();
-    yield(); //to nzm dal mi treba on ima na vezbama???
-
-//    thread_exit();
+    yield();
 }
 
 _thread* _thread::initMain() {
@@ -120,8 +114,6 @@ _thread* _thread::initMain() {
     main = running;
     running->mainFlag = true;
     return running;
-//    printString("\n Adresa runninga maina je: ");
-//    printInt((uint64)running);
 }
 
 bool _thread::isFinished() {

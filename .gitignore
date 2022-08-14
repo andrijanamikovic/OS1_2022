@@ -48,7 +48,6 @@ src/main.cpp
 h/ConsumerProducer_CPP_API_test.hpp
 h/ConsumerProducer_CPP_Sync_API_test.hpp
 test/lock.S
-src/main.cpp
 test/printing.cpp
 test/printing.hpp
 test/Threads_C_API_test.hpp

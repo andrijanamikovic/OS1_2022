@@ -3,7 +3,6 @@
 //
 
 #include "../h/BlockHeader.hpp"
-#include "../h/print.hpp"
 
 BlockHeader* BlockHeader::putBlock(BlockHeader* newBlck) {
     if (newBlck == nullptr) return nullptr;
@@ -65,12 +64,6 @@ void BlockHeader::printList() {
     BlockHeader* current = first;
     int i =1;
     while (current){
-//        printString("\n Element adresa pocetka i tog elementa u listi: ");
-//        printInteger(i);
-//        printString(" : ");
-//        printInteger(reinterpret_cast<uint64>(current));
-//        printString("\n Velicina adresnog prostora je: \n");
-//        printInteger(current->size);
         i++;
         current = current->next;
     }

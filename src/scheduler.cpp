@@ -9,8 +9,6 @@ List Scheduler::readyCoroutineQueue;
 
 _thread *Scheduler::get()
 {
-//    printString("\n Adresa prvog u scheduleru: ");
-//    printInt((uint64)readyCoroutineQueue.head->data);
     return readyCoroutineQueue.removeFirst();
 }
 
