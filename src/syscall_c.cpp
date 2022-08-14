@@ -15,7 +15,7 @@ void* mem_alloc(size_t size){
     if(!size) return nullptr;
 //    printString("Gospode pomiluj: ");
 //    printInt((uint64)MEM_BLOCK_SIZE);
-    size_t blocks = (size+sizeof (BlockHeader))/ MEM_BLOCK_SIZE + (size % MEM_BLOCK_SIZE == 0 ? 0 : 1);
+    size_t blocks = (size)/ MEM_BLOCK_SIZE + (size % MEM_BLOCK_SIZE == 0 ? 0 : 1);
     __asm__ volatile ("mv a1, %0" : : "r" (blocks));
     invoker(MEM_ALLOC);
     uint64 volatile ret;

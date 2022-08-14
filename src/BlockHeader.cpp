@@ -7,6 +7,7 @@
 
 BlockHeader* BlockHeader::putBlock(BlockHeader* newBlck) {
     if (newBlck == nullptr) return nullptr;
+    newBlck->next = newBlck->prev = nullptr;
     if (first == nullptr) {
         last = first = newBlck;
         return newBlck;
@@ -46,10 +47,13 @@ BlockHeader* BlockHeader::removeBlock(BlockHeader *Blck) {
     } else if (Blck == last){
         last = last->prev;
     }
-    if (Blck->prev)
-        Blck->prev->next = Blck->next;
+//    void *ptr = (void*)0x1010101010101;
+    if (Blck->prev ){
+            Blck->prev->next = Blck->next;
+    }
     if (Blck->next)
         Blck->next->prev = Blck->prev;
+    Blck = nullptr;
     return first;
 }
 
