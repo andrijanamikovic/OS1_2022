@@ -69,9 +69,9 @@ private:
             timeSlice(DEFAULT_TIME_SLICE),
             mainFlag(false)
     {
-        if (body != nullptr) {
-            Scheduler::put(this);
-        }
+//        if (body != nullptr) {
+//            Scheduler::put(this);
+//        }
     }
 
     _thread(Body body, void* arg, uint64* stack) :
@@ -85,9 +85,9 @@ private:
             timeSlice(DEFAULT_TIME_SLICE),
             mainFlag(false)
     {
-        if (body != nullptr) {
-            Scheduler::put(this);
-        }
+//        if (body != nullptr) {
+//            Scheduler::put(this);
+//        }
     }
 
     struct Context

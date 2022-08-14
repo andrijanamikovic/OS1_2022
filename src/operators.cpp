@@ -3,6 +3,8 @@
 //
 #include "../lib/hw.h"
 #include "../h/syscall_c.hpp"
+#include "../h/syscall_cpp.hpp"
+
 
 void *operator new(size_t size)
 {
@@ -14,7 +16,7 @@ void *operator new[](size_t size)
     return mem_alloc(size);
 }
 
-void operator delete(void *p) noexcept
+void operator delete(void *p)
 {
     mem_free(p);
 }
@@ -23,3 +25,4 @@ void operator delete[](void *p) noexcept
 {
     mem_free(p);
 }
+

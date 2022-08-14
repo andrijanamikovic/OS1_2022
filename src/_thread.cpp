@@ -27,24 +27,22 @@ void _thread::dispatch() {
 //    printString("\n Lista iz schedulera na pocetku dispatcha: \n");
 //    Scheduler::printScheduler();
     _thread *old = running;
-    if (old->state==RUNNING && !old->mainFlag) { //bez provere dal je main?
+    if (old->state==RUNNING && !old->mainFlag) {
         Scheduler::put(old);
     }
 
     running = Scheduler::get();
-//    printString("\n Adresa current iz schedulera je  je: ");
-//    printInt((uint64 )current);
-//    printString("\n Lista iz schedulera na kraju dispatcha: \n");
-//    Scheduler::printScheduler();
-//    running = current;
+
     if (running){
-////        printString("\n Adresa runninga je: ");
-////        printInt((uint64 )running);
-////        printString("\n Heap end: ");
-////        printInt((uint64)HEAP_END_ADDR);
         running->state = RUNNING;
     } else {
-        running = main;
+        if (old->mainFlag) {
+            running = main;
+            main->state = FINISHED;
+            return;
+        } else {
+            running = main;
+        }
     }
     if (running) {
         _thread::contextSwitch(&old->context, &running->context);

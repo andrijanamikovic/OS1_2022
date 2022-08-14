@@ -6,13 +6,13 @@
 #include "../lib/console.h"
 #include "../h/_thread.hpp"
 #include "../h/AbiCodes.hpp"
-#include "../test/printing.hpp"
 #include "../h/MemoryAllocator.hpp"
 
 
 void Riscv::popSppSpie()
 {
     __asm__ volatile ("csrw sepc, ra");
+    ms_sstatus(SSTATUS_SPP);
     __asm__ volatile ("sret");
 }
  uint64* Riscv::readArgs(uint64* a) {
@@ -51,13 +51,15 @@ uint64 Riscv::handleSupervisorTrap()
                 uint64 blocks = arrg1 * MEM_BLOCK_SIZE;
                 retval = (uint64) MemoryAllocator::mem_alloc(blocks); //on ima povratnu vrednost neku ja nemam???
 //                //da li mi je potrebna povratna vrednost???
-                printString("\n Allocated something");
                 //treba da se zove iz MEM_ALLOCATORA ne iz C API
+                __asm__ volatile("sd a0, 10*8(fp)");
+                __asm__ volatile("mv a0, %0" : :"r"(retval));
                 break;
             }
             case MEM_FREE: {
                 void *ptr = (void *)arrg1;
                 retval = (uint64)MemoryAllocator::mem_free(ptr);
+                __asm__ volatile("mv a0, %0" : :"r"(retval));
                 break;
             }
             case THREAD_CREATE:{
@@ -66,8 +68,9 @@ uint64 Riscv::handleSupervisorTrap()
                 void* arg = (void*)arrg3;
                 uint64* stack = (uint64*)arrg4;
                 handle = _thread::threadInit(body, arg, stack);
+                handle->start();
                 if (handle== nullptr) retval = -1;
-//                *handle->start();
+                __asm__ volatile("mv a0, %0" : :"r"(retval));
                 break;
             }
             case THREAD_EXIT:{
@@ -91,16 +94,16 @@ uint64 Riscv::handleSupervisorTrap()
     } else if (scause == 0x8000000000000001UL)
     {
         // interrupt: yes; cause code: supervisor software interrupt (CLINT; machine timer interrupt)
-        _thread::timeSliceCounter++;
-        if (_thread::timeSliceCounter >= _thread::running->getTimeSliceCounter())
-        {
-            uint64 sepc = r_sepc(); //ovo i liniju ispod mozda moram i ovamo svaki put da radim
-            uint64 sstatus = r_sstatus();
-            _thread::timeSliceCounter = 0;
-            _thread::dispatch();
-            w_sstatus(sstatus);
-            w_sepc(sepc);
-        }
+//        _thread::timeSliceCounter++;
+//        if (_thread::timeSliceCounter >= _thread::running->getTimeSliceCounter())
+//        {
+//            uint64 sepc = r_sepc(); //ovo i liniju ispod mozda moram i ovamo svaki put da radim
+//            uint64 sstatus = r_sstatus();
+//            _thread::timeSliceCounter = 0;
+//            _thread::dispatch();
+//            w_sstatus(sstatus);
+//            w_sepc(sepc);
+//        }
         mc_sip(SIP_SSIP);
     } else if (scause == 0x8000000000000009UL)
     {
