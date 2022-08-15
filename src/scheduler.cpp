@@ -3,7 +3,6 @@
 //
 
 #include "../h/scheduler.hpp"
-#include "../test/printing.hpp"
 
 List Scheduler::readyCoroutineQueue;
 

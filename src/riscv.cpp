@@ -15,13 +15,6 @@ void Riscv::popSppSpie()
     ms_sstatus(SSTATUS_SPP);
     __asm__ volatile ("sret");
 }
- uint64* Riscv::readArgs(uint64* a) {
-    __asm__ volatile ("mv %0, a1":"=r" (a[0]));
-    __asm__ volatile ("mv %0, a2":"=r" (a[1]));
-    __asm__ volatile ("mv %0, a3":"=r" (a[2]));
-    __asm__ volatile ("mv %0, a4":"=r" (a[3]));
-    return a;
-}
 
 uint64 Riscv::handleSupervisorTrap()
 {
@@ -32,7 +25,6 @@ uint64 Riscv::handleSupervisorTrap()
     __asm__ volatile ("mv %0, a2":"=r" (arrg2));
     __asm__ volatile ("mv %0, a3":"=r" (arrg3));
     __asm__ volatile ("mv %0, a4":"=r" (arrg4));
-//    &arr = readArgs(arr);
 
     uint64 scause = r_scause();
 
@@ -42,18 +34,13 @@ uint64 Riscv::handleSupervisorTrap()
     {
         // interrupt: no; cause code: environment call from U-mode(8) or S-mode(9)
         uint64 sepc = r_sepc() + 4; //sepc get value of ecall so i need to move it back
-        uint64 sstatus = r_sstatus(); //da li meni moze prekid od korisnickog rezima??? ako da onda imam i pc ne samo sepc
-//        _thread::timeSliceCounter = 0;
-        //kako dobijam argumente???? da vidim koji je u pitanju
+        uint64 sstatus = r_sstatus();
 
         switch (code) {
             case MEM_ALLOC: {
                 uint64 blocks = arrg1 * MEM_BLOCK_SIZE;
-                retval = (uint64) MemoryAllocator::mem_alloc(blocks); //on ima povratnu vrednost neku ja nemam???
-//                //da li mi je potrebna povratna vrednost???
-                //treba da se zove iz MEM_ALLOCATORA ne iz C API
+                retval = (uint64) MemoryAllocator::mem_alloc(blocks);
                 __asm__ volatile("sd a0, 10*8(fp)");
-                __asm__ volatile("mv a0, %0" : :"r"(retval));
                 break;
             }
             case MEM_FREE: {

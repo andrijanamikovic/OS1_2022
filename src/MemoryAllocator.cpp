@@ -21,7 +21,7 @@ void* MemoryAllocator::mem_alloc(size_t size){
     size_t remaining = current->size - size;
     if (remaining >= sizeof (BlockHeader) + MEM_BLOCK_SIZE){
         if (AllocatedMemoryBlocks == nullptr) {
-            AllocatedMemoryBlocks = (BlockHeader *) ((char*) current + remaining); //meni ova linija setuje first na 101010.... zasto?
+            AllocatedMemoryBlocks = (BlockHeader *) ((char*) current + remaining);
             AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->last = nullptr;
         }
         newBlck = (BlockHeader*)((char*)current+remaining);

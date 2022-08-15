@@ -11,9 +11,6 @@ class Riscv
 {
 public:
 
-
-    static  uint64* readArgs(uint64*);
-
     //push x3..31
     static void  pushRegisters();
 
