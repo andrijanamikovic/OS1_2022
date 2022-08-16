@@ -1,5 +1,6 @@
 #include "../h/_thread.hpp"
 #include "../h/riscv.hpp"
+#include "../test/printing.hpp"
 void userMain();
 
 void wraperUserMain(void* ){
@@ -10,6 +11,7 @@ void wraperUserMain(void* ){
 }
 
 void main(){
+//    printInt((uint64 )HEAP_START_ADDR);
     _thread::initMain();
     _thread* userMain = _thread::createThread(&wraperUserMain, nullptr);
     userMain->start();

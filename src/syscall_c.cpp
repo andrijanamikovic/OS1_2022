@@ -61,8 +61,71 @@ int thread_exit(){
     invoker(THREAD_EXIT);
     uint64 volatile ret;
     __asm__ volatile ("mv %0, a0" : "=r" (ret));
-    return (ret > 0 ? 0 : -1);
+    return (ret > 0 ? 0 : -2);
 }
 void thread_dispatch(){
     invoker(THREAD_DISPATCH);
 }
+
+int sem_open(sem_t *handle, unsigned int init) {
+    if (!handle) return -1;
+    __asm__ volatile ("mv a4, a3");
+    __asm__ volatile ("mv a3, a2");
+    __asm__ volatile ("mv a2, a1");
+    __asm__ volatile ("mv a1, a0");
+    invoker(SEM_OPEN);
+    uint64 volatile ret;
+    __asm__ volatile ("mv %0, a0" : "=r" (ret));
+    return (ret > 0 ? 0 : -3);
+}
+
+int sem_close(sem_t handle){
+    if (!handle) return -1;
+    __asm__ volatile ("mv a4, a3");
+    __asm__ volatile ("mv a3, a2");
+    __asm__ volatile ("mv a2, a1");
+    __asm__ volatile ("mv a1, a0");
+    invoker(SEM_CLOSE);
+    uint64 volatile ret;
+    __asm__ volatile ("mv %0, a0" : "=r" (ret));
+    return (ret > 0 ? 0 : -3);
+}
+
+int sem_wait(sem_t id){
+    if (!id) return -1;
+    __asm__ volatile ("mv a4, a3");
+    __asm__ volatile ("mv a3, a2");
+    __asm__ volatile ("mv a2, a1");
+    __asm__ volatile ("mv a1, a0");
+    invoker(SEM_WAIT);
+    uint64 volatile ret;
+    __asm__ volatile ("mv %0, a0" : "=r" (ret));
+    return (ret > 0 ? 0 : -3);
+}
+int sem_signal(sem_t id){
+    if (!id) return -1;
+    __asm__ volatile ("mv a4, a3");
+    __asm__ volatile ("mv a3, a2");
+    __asm__ volatile ("mv a2, a1");
+    __asm__ volatile ("mv a1, a0");
+    invoker(SEM_SIGNAL);
+    uint64 volatile ret;
+    __asm__ volatile ("mv %0, a0" : "=r" (ret));
+    return (ret > 0 ? 0 : -3);
+}
+
+void putc(char){
+    __asm__ volatile ("mv a4, a3");
+    __asm__ volatile ("mv a3, a2");
+    __asm__ volatile ("mv a2, a1");
+    __asm__ volatile ("mv a1, a0");
+    invoker(PUT_C);
+}
+
+char getc(){
+    invoker(GET_C);
+    uint64 volatile ret;
+    __asm__ volatile ("mv %0, a0" : "=r" (ret));
+    return (char )ret;
+}
+

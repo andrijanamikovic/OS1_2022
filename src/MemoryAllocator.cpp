@@ -28,6 +28,7 @@ void* MemoryAllocator::mem_alloc(size_t size){
         newBlck->size = size;
         newBlck->next = nullptr;
         newBlck->prev = nullptr;
+//        newBlck->first = newBlck->last = nullptr;
         AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->putBlock(newBlck);
         current->size = remaining - sizeof(BlockHeader);
     } else {
@@ -51,6 +52,7 @@ int MemoryAllocator::mem_free(void* ptr){
     BlockHeader* blck = (BlockHeader*)((char*)ptr - sizeof(BlockHeader));
     blck->next = nullptr;
     blck->prev = nullptr;
+//    blck->first = blck->last = nullptr;
     AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->removeBlock(blck);
     if (AllocatedMemoryBlocks->first==AllocatedMemoryBlocks->last && AllocatedMemoryBlocks->first == nullptr){
         AllocatedMemoryBlocks = nullptr;

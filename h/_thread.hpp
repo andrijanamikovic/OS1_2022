@@ -20,7 +20,7 @@ public:
     //msm da da
 
     enum ThreadState{
-        CREATED, RUNNING, FINISHED, SLEEPING
+        CREATED, RUNNING, FINISHED, SLEEPING, BLOCKED
     };
     ~_thread() { delete[] stack; }
 
@@ -28,6 +28,7 @@ public:
 
     bool isFinished();
     void setFinished(bool finished);
+    void setState(int i);
 
     static _thread *createThread(Body body, void* arg);
 
@@ -50,6 +51,7 @@ public:
     void operator delete (void* p);
     void operator delete[] (void* p);
     friend class List;
+    friend class _sem;
     static _thread* main;
 //    //added..
 //    //static void wrapper(); ono body je wrapper valjda

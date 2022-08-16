@@ -125,5 +125,31 @@ void _thread::setFinished(bool value) {
         this->state = FINISHED;
     }
 }
+void _thread::setState(int i) {
+    switch (i) {
+        case 0: {
+            this->state = CREATED;
+            break;
+        }
+        case 1: {
+            this->state = RUNNING;
+            break;
+        }
+        case 2:{
+            this->state = FINISHED;
+            break;
+        }
+        case 3: {
+            this->state = SLEEPING;
+            break;
+        }
+        case 4: {
+            this->state = BLOCKED;
+            break;
+        }
+    }
+}
+
+
 
 

@@ -26,3 +26,10 @@ void operator delete[](void *p) noexcept
     mem_free(p);
 }
 
+char Console::getc() {
+    return ::getc();
+}
+
+void Console::putc(char c) {
+    ::putc(c);
+}

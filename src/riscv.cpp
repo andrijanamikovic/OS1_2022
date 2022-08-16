@@ -7,6 +7,8 @@
 #include "../h/_thread.hpp"
 #include "../h/AbiCodes.hpp"
 #include "../h/MemoryAllocator.hpp"
+#include "../h/_sem.hpp"
+#include "../lib/console.h"
 
 
 void Riscv::popSppSpie()
@@ -72,6 +74,46 @@ uint64 Riscv::handleSupervisorTrap()
             case THREAD_START: {
                 _thread *handle = (_thread*)arrg1;
                 handle->start();
+                break;
+            }
+            case SEM_OPEN:{
+                sem_t *handle = (sem_t*)arrg1;
+                unsigned int init = (unsigned int)arrg2;
+                *handle = _sem::sem_open(init);
+                if (handle== nullptr) retval = -1;
+                __asm__ volatile("mv a0, %0" : :"r"(retval));
+                break;
+            }
+            case SEM_CLOSE:{
+                sem_t *handle = (sem_t*)arrg1;
+                _sem::sem_close((_sem *)handle);
+                if (handle== nullptr) retval = -1;
+                __asm__ volatile("mv a0, %0" : :"r"(retval));
+                break;
+            }
+            case SEM_WAIT: {
+                sem_t *handle = (sem_t*)arrg1;
+                _sem::sem_wait((_sem *)handle);
+                if (handle== nullptr) retval = -1;
+                __asm__ volatile("mv a0, %0" : :"r"(retval));
+                break;
+            }
+            case SEM_SIGNAL:{
+                sem_t *handle = (sem_t*)arrg1;
+                _sem::sem_signal((_sem *)handle);
+                if (handle== nullptr) retval = -1;
+                __asm__ volatile("mv a0, %0" : :"r"(retval));
+                break;
+            }
+            case GET_C:{
+                char c = __getc();
+                __asm__ volatile("sd a0, 10*8(fp)");
+                __asm__ volatile("mv a0, %0" : : "r"(c));
+                break;
+            }
+            case PUT_C:{
+                char c = (char)arrg1;
+                __putc(c);
                 break;
             }
 
