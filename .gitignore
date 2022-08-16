@@ -53,3 +53,12 @@ test/printing.hpp
 test/Threads_C_API_test.hpp
 test/Threads_CPP_API_test.hpp
 test/userMain.cpp
+test/buffer.cpp
+test/buffer.hpp
+test/buffer_CPP_API.cpp
+test/buffer_CPP_API.hpp
+test/ConsumerProducer_C_API_test.h
+test/ConsumerProducer_CPP_API_test.hpp
+test/ConsumerProducer_CPP_Sync_API_test.hpp
+test/ThreadSleep_C_API_test.hpp
+test/uputstvo.txt
