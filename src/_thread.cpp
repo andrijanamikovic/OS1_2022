@@ -4,9 +4,8 @@
 
 #include "../h/_thread.hpp"
 #include "../h/riscv.hpp"
-#include "../h/mem.h"
-#include "../h/syscall_c.hpp"
-
+#include "../h/scheduler.hpp"
+#include "../h/print.hpp"
 
 _thread *_thread::running = nullptr;
 uint64 _thread::timeSliceCounter = 0;
@@ -101,9 +100,10 @@ int _thread::sleep(time_t timeout) { //to do...
 
 void _thread::threadWrapper() {
     Riscv::popSppSpie();
-    running->state = RUNNING;
-    running->body(running->arg);
     running->state = FINISHED;
+//    printstring("\n running args in wrraper: \n");
+//    printinteger((uint64) running->arg);
+    running->body(running->arg);
     yield();
 }
 

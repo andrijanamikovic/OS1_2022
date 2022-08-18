@@ -3,7 +3,6 @@
 //
 
 #include "../h/_sem.hpp"
-#include "../h/mem.h"
 #include "../h/_thread.hpp"
 
 int _sem::sem_close(_sem *sem) {
@@ -15,8 +14,8 @@ int _sem::sem_close(_sem *sem) {
         current->start();
         current = sem->waiting->removeFirst();
     }
-    sem->waiting = nullptr;
-    delete sem;
+//    sem->waiting = nullptr;
+//    delete sem;
     return 0;
 }
 
@@ -56,18 +55,30 @@ void *_sem::operator new[](size_t size) {
 }
 
 void _sem::block() {
-    _thread::running->setState(4);
-    waiting->addLast(_thread::running);
-    printString("\n Lista blokiranih niti: \n");
-    waiting->printList();
+    if (_thread::running)
+        _thread::running->setState(4);
+    if (waiting)
+        waiting->addLast(_thread::running);
+    else {
+        waiting = new List();
+        waiting->addLast(_thread::running);
+    }
+//    printString("\n Lista blokiranih niti: \n");
+//    waiting->printList();
     _thread::yield();
 }
 
 void _sem::unblock() {
-    _thread* current = waiting->removeFirst();
-    if (current){
-        current->setState(0);
-        current->start();
+    if (waiting != nullptr) {
+        _thread *current = waiting->removeFirst();
+        if (current) {
+            current->setState(0);
+            current->start();
+        }
     }
+}
+
+_sem::~_sem() {
+    sem_close(this);
 }
 

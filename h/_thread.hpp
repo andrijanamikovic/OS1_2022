@@ -6,7 +6,7 @@
 #define OS1_2022__THREAD_HPP
 
 #include "../lib/hw.h"
-#include "scheduler.hpp"
+//#include "scheduler.hpp"
 #include "../h/MemoryAllocator.hpp"
 
 
@@ -50,8 +50,8 @@ public:
     void *operator new[] (size_t size);
     void operator delete (void* p);
     void operator delete[] (void* p);
-    friend class List;
-    friend class _sem;
+//    friend class List;
+//    friend class _sem;
     static _thread* main;
 //    //added..
 //    //static void wrapper(); ono body je wrapper valjda

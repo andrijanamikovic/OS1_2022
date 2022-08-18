@@ -3,13 +3,15 @@
 //
 
 #include "../h/riscv.hpp"
-#include "../lib/console.h"
+//#include "../lib/console.h"
 #include "../h/_thread.hpp"
 #include "../h/AbiCodes.hpp"
 #include "../h/MemoryAllocator.hpp"
 #include "../h/_sem.hpp"
 #include "../lib/console.h"
+#include "../h/print.hpp"
 
+bool Riscv::once = false;
 
 void Riscv::popSppSpie()
 {
@@ -23,6 +25,15 @@ uint64 Riscv::handleSupervisorTrap()
     uint64 code = 0;
     __asm__ volatile ("mv %0, a0":"=r" (code));
     uint64 arrg1, arrg2, arrg3, arrg4;
+//    __asm__ volatile ("ld s1, 11*8(fp)");
+//    __asm__ volatile ("ld s2, 12*8(fp)");
+//    __asm__ volatile ("ld s3, 13*8(fp)");
+//    __asm__ volatile ("ld s4, 14*8(fp)");
+//    __asm__ volatile ("mv %0, s1":"=r" (arrg1));
+//    __asm__ volatile ("mv %0, s2":"=r" (arrg2));
+//    __asm__ volatile ("mv %0, s3":"=r" (arrg3));
+//    __asm__ volatile ("mv %0, s4":"=r" (arrg4));
+
     __asm__ volatile ("mv %0, a1":"=r" (arrg1));
     __asm__ volatile ("mv %0, a2":"=r" (arrg2));
     __asm__ volatile ("mv %0, a3":"=r" (arrg3));
@@ -107,6 +118,8 @@ uint64 Riscv::handleSupervisorTrap()
             }
             case GET_C:{
                 char c = __getc();
+//                printstring("Char c after get_c calling: ");
+//                printinteger(c);
                 __asm__ volatile("sd a0, 10*8(fp)");
                 __asm__ volatile("mv a0, %0" : : "r"(c));
                 break;
@@ -140,14 +153,17 @@ uint64 Riscv::handleSupervisorTrap()
         console_handler();
     } else
     {
-        printString("Else grana u prekidnoj rutini \n");
-        printString("\n Scause: ");
-        printInt(r_scause());
-        printString("\n Sepc: ");
-        printInt(r_sepc());
-        printString("\n Stval: ");
-        printInt(r_stval());
-        printString("\n\n\n");
+        if (!once) {
+            printstring("Else grana u prekidnoj rutini \n");
+            printstring("\n Scause: ");
+            printinteger(r_scause());
+            printstring("\n Sepc: ");
+            printinteger(r_sepc());
+            printstring("\n Stval: ");
+            printinteger(r_stval());
+            printstring("\n\n\n");
+            once = true;
+        }
     }
     return retval;
 }

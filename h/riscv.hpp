@@ -10,7 +10,7 @@
 class Riscv
 {
 public:
-
+    static bool once;
     //push x3..31
     static void  pushRegisters();
 

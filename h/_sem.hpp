@@ -8,6 +8,7 @@
 
 
 #include "list.hpp"
+#include "syscall_c.hpp"
 
 class _sem {
 
@@ -27,6 +28,7 @@ private:
         value = init;
         waiting = new List();
     }
+    ~_sem();
     int value;
     List* waiting;
 

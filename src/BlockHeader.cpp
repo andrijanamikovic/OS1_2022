@@ -71,6 +71,7 @@ void BlockHeader::printList() {
 
 void BlockHeader::joinFreeBlocks() {
     BlockHeader* current = first;
+    if (!current) return;
     while (current->next && ((char*)current + current->size + sizeof (BlockHeader) >= (char*)current->next)){
         current->size += current->next->size + sizeof(BlockHeader);
         if (current->next->next) {

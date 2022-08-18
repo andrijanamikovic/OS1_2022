@@ -47,12 +47,13 @@ void* MemoryAllocator::mem_alloc(size_t size){
 int MemoryAllocator::mem_free(void* ptr){
     if (initialize == false) {
         MemoryAllocator::init();
+        return -1;
     }
     if (AllocatedMemoryBlocks == nullptr) return -1;
     BlockHeader* blck = (BlockHeader*)((char*)ptr - sizeof(BlockHeader));
     blck->next = nullptr;
     blck->prev = nullptr;
-//    blck->first = blck->last = nullptr;
+    blck->first = blck->last = nullptr;
     AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->removeBlock(blck);
     if (AllocatedMemoryBlocks->first==AllocatedMemoryBlocks->last && AllocatedMemoryBlocks->first == nullptr){
         AllocatedMemoryBlocks = nullptr;

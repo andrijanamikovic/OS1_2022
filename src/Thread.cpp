@@ -4,8 +4,6 @@
 
 #include "../h/syscall_cpp.hpp"
 #include "../h/syscall_c.hpp"
-#include "../h/riscv.hpp"
-
 
 Thread::Thread(void (*body)(void *), void *arg) {
     thread_create(&myHandle,body,arg);

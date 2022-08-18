@@ -6,14 +6,16 @@
 #define _syscall_cpp
 
 #include "../lib/hw.h"
+//#include "syscall_c.hpp"
 
-#include "syscall_c.hpp"
+//#include "syscall_c.hpp"
 
 
 void *operator new (size_t size);
 void operator delete (void* p);
 
-
+class _thread;
+typedef _thread* thread_t;
 class Thread {
 public:
     Thread (void (*body)(void*), void* arg);
@@ -29,6 +31,8 @@ private:
     thread_t myHandle;
 };
 
+class _sem;
+typedef _sem *sem_t;
 class Semaphore {
 public:
     Semaphore (unsigned init = 1);
