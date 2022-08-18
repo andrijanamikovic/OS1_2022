@@ -100,10 +100,9 @@ int _thread::sleep(time_t timeout) { //to do...
 
 void _thread::threadWrapper() {
     Riscv::popSppSpie();
-    running->state = FINISHED;
-//    printstring("\n running args in wrraper: \n");
-//    printinteger((uint64) running->arg);
+    running->state = RUNNING;
     running->body(running->arg);
+    running->state = FINISHED;
     yield();
 }
 
