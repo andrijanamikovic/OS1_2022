@@ -22,7 +22,7 @@ public:
     enum ThreadState{
         CREATED, RUNNING, FINISHED, SLEEPING, BLOCKED
     };
-    ~_thread() { delete[] stack; }
+    ~_thread() { delete[] stack;}
 
     using Body = void (*)(void*);
 

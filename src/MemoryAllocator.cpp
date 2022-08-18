@@ -55,7 +55,8 @@ int MemoryAllocator::mem_free(void* ptr){
     blck->prev = nullptr;
     blck->first = blck->last = nullptr;
     AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->removeBlock(blck);
-    if (AllocatedMemoryBlocks->first==AllocatedMemoryBlocks->last && AllocatedMemoryBlocks->first == nullptr){
+    if (AllocatedMemoryBlocks->first == nullptr){ //AllocatedMemoryBlocks->first==AllocatedMemoryBlocks->last &&
+        AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->last = nullptr;
         AllocatedMemoryBlocks = nullptr;
     }
     FreeMemoryBlocks->first = FreeMemoryBlocks->putBlock((BlockHeader*) blck);

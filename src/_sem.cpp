@@ -14,13 +14,15 @@ int _sem::sem_close(_sem *sem) {
         current->start();
         current = sem->waiting->removeFirst();
     }
-//    sem->waiting = nullptr;
-//    delete sem;
+    delete sem->waiting;
+    sem->waiting = nullptr;
+    delete sem;
     return 0;
 }
 
 _sem* _sem::sem_open(unsigned int val) {
     _sem* sem = new _sem(val);
+//    sem->waiting = new List();
     return sem;
 }
 

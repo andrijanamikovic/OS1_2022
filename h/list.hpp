@@ -18,13 +18,20 @@ private:
         Elem *next;
 
         Elem(_thread *data, Elem *next) : data(data), next(next) {}
+        Elem(_thread *data) {
+            this->data = data;
+            this->next = nullptr;
+        }
     };
 
     Elem *head, *tail;
 public:
 
 
-    List() : head(nullptr), tail(nullptr) {}
+    List(){
+        head = nullptr;
+        tail = nullptr;
+    }
 
     List(const List &) = delete;
 

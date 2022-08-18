@@ -8,14 +8,17 @@ void List::addFirst(_thread *data)
     Elem *elem = (Elem*) __mem_alloc(sizeof (Elem)) ;
     elem->data = data;
     elem->next = head;
-    head = elem;
-    if (!tail) { tail = head; }
+    this->head = elem;
+    if (!this->tail) { this->tail = this->head; }
 }
 
 _thread *List::removeFirst()
 {
     if (head == nullptr) { return nullptr; }
-    if (head == (void *)0x10) return nullptr;
+    if (head == (void *)0x10) {
+        printstring("\n\n\n\nGospode pomiluj.... \n\n\n\n");
+        return nullptr;
+    }
 //    void *ptr = (void*)0x1010101010101;
 //    if (head == ptr ) {
 //        head = nullptr;
@@ -29,13 +32,14 @@ _thread *List::removeFirst()
 //    printinteger((uint64)&head);
     head = head->next;
     if (head == nullptr) { tail = nullptr; }
-
     _thread *ret = elem->data;
     int i  = MemoryAllocator::mem_free(elem);
     if (i<0) {
         head = tail = nullptr;
     }
 //        __mem_free(elem);
+//    printstring("\n\n\nRet value is: \n");
+//    printinteger((uint64 )ret);
     return ret;
 }
 
@@ -44,8 +48,16 @@ void List::addLast(_thread *data)
     Elem *elem = (Elem*) __mem_alloc(sizeof (Elem)) ;
     elem->data = data;
     elem->next = nullptr;
-//    printstring("\n Adresa elementa koji se dodaje u listu schedulera: ");
-//        printinteger((uint64)elem->data);
+    if (head == (void *)0x10) {
+        printstring("\n\n\n\nGospode pomiluj 2.... \n\n\n\n");
+//        if (tail != nullptr && tail!= (void *) 0x10){
+//            head = tail;
+//        } else {
+            head = tail = nullptr;
+//        }
+    }
+//    printstring("\n\n\n Adresa elementa koji se dodaje u listu: \n");
+//    printinteger((uint64)elem->data);
 //    printstring("\n");
     if (tail)
     {

@@ -9,10 +9,12 @@ BlockHeader* BlockHeader::putBlock(BlockHeader* newBlck) {
     newBlck->next = newBlck->prev = nullptr;
     if (first == nullptr) {
         last = first = newBlck;
+        newBlck->next = newBlck->prev = nullptr;
         return newBlck;
     } else if (newBlck < first){
         first->prev = newBlck;
         newBlck->next = first;
+        newBlck->prev = nullptr;
         first = newBlck;
         return newBlck;
     } else {
@@ -33,6 +35,7 @@ BlockHeader* BlockHeader::putBlock(BlockHeader* newBlck) {
     last->next = newBlck;
     newBlck->prev = last;
     last = newBlck;
+    newBlck->next = nullptr;
     return first;
 
 }
@@ -40,11 +43,19 @@ BlockHeader* BlockHeader::putBlock(BlockHeader* newBlck) {
 BlockHeader* BlockHeader::removeBlock(BlockHeader *Blck) {
     if (Blck == first){
         first = first->next;
-        if (first == nullptr) {
+        if (first) {
+            first->prev = nullptr;
+        }
+        else {
             last = nullptr;
         }
+        return first;
     } else if (Blck == last){
         last = last->prev;
+        if (last){
+            last->next = nullptr;
+        }//added after testing allocator
+        return first;
     }
 //    void *ptr = (void*)0x1010101010101;
     if (Blck->prev ){

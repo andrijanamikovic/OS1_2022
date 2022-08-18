@@ -19,7 +19,7 @@ protected:
     size_t size;
     BlockHeader* next;
     BlockHeader* prev;
-    BlockHeader(size_t size, BlockHeader* next = nullptr, BlockHeader* prev = nullptr): size(size), next(next),prev(prev), first(nullptr), last(nullptr){}
+    explicit BlockHeader(size_t size, BlockHeader* next = nullptr, BlockHeader* prev = nullptr): size(size), next(next),prev(prev), first(nullptr), last(nullptr){}
     ~BlockHeader(){ size= 0; next = nullptr; prev = nullptr; first=last= nullptr;}
     BlockHeader *first, *last;
     friend class MemoryAllocator;

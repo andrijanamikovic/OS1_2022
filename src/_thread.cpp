@@ -24,7 +24,7 @@ void _thread::yield()
 
 void _thread::dispatch() {
     _thread *old = running;
-    if (old->state==RUNNING && !old->mainFlag) {
+    if (old && old->state==RUNNING && !old->mainFlag) {
         Scheduler::put(old);
     }
 
