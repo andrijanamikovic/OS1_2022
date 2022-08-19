@@ -18,15 +18,16 @@ public:
      static int sem_wait(_sem* sem);
      static int sem_signal(_sem* sem);
 
-    void *operator new (size_t size);
-    void *operator new[] (size_t size);
-    void operator delete (void* p);
-    void operator delete[] (void* p);
+//    void *operator new (size_t size);
+//    void *operator new[] (size_t size);
+//    void operator delete (void* p);
+//    void operator delete[] (void* p);
 
 private:
     _sem(int init = 1){
         value = init;
         waiting = new List();
+
     }
     ~_sem();
     int value;

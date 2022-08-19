@@ -19,6 +19,7 @@ _thread *List::removeFirst()
         printstring("\n\n\n\nGospode pomiluj.... \n\n\n\n");
         return nullptr;
     }
+//    printstring("\n\n\n Removing from list\n\n\n");
 //    void *ptr = (void*)0x1010101010101;
 //    if (head == ptr ) {
 //        head = nullptr;
@@ -30,8 +31,11 @@ _thread *List::removeFirst()
 //        printInt((uint64)(elem->data));
 //    printstring("Head is in remove first: \n");
 //    printinteger((uint64)&head);
-    head = head->next;
-    if (head == nullptr) { tail = nullptr; }
+    if (head == tail) {
+        head = tail = nullptr;
+    } else {
+        head = head->next;
+    }
     _thread *ret = elem->data;
     int i  = MemoryAllocator::mem_free(elem);
     if (i<0) {
@@ -45,6 +49,7 @@ _thread *List::removeFirst()
 
 void List::addLast(_thread *data)
 {
+//    printstring("\n\n\nAdding to list: \n\n\n");
     Elem *elem = (Elem*) __mem_alloc(sizeof (Elem)) ;
     elem->data = data;
     elem->next = nullptr;
@@ -114,4 +119,14 @@ void List::printList(){
 //            current = current->next;
 //        }
 //
+}
+
+List::List() {
+    this->head = 0;
+    this->tail = 0;
+}
+
+void List::init() {
+    this->head = 0;
+    this->tail = 0;
 }

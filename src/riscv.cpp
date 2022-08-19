@@ -63,11 +63,13 @@ uint64 Riscv::handleSupervisorTrap()
                 break;
             }
             case THREAD_CREATE:{
-                _thread *handle = (_thread*)arrg1;
+                _thread *handle = nullptr;
+                handle = (_thread*)arrg1;
                 _thread::Body body = (_thread::Body)arrg2;
                 void* arg = (void*)arrg3;
                 uint64* stack = (uint64*)arrg4;
                 handle = _thread::threadInit(body, arg, stack);
+                __asm__ volatile("sd a1, 11*8(fp)");
                 handle->start();
                 if (handle== nullptr) retval = -1;
                 __asm__ volatile("mv a0, %0" : :"r"(retval));

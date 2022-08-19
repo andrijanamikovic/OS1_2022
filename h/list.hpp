@@ -28,10 +28,7 @@ private:
 public:
 
 
-    List(){
-        head = nullptr;
-        tail = nullptr;
-    }
+    List();
 
     List(const List &) = delete;
 
@@ -44,6 +41,7 @@ public:
     _thread *removeLast();
     _thread *peekLast();
     void printList();
+    void init();
 };
 
 #endif //OS1_VEZBE07_RISCV_CONTEXT_SWITCH_1_SYNCHRONOUS_LIST_HPP

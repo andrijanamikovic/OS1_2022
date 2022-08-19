@@ -10,6 +10,7 @@
 _thread *_thread::running = nullptr;
 uint64 _thread::timeSliceCounter = 0;
 _thread* _thread::main = nullptr;
+bool _thread::finished = false;
 
 _thread *_thread::createThread(Body body, void* args)
 {
@@ -24,7 +25,7 @@ void _thread::yield()
 
 void _thread::dispatch() {
     _thread *old = running;
-    if (old && old->state==RUNNING && !old->mainFlag) {
+    if (old && old->state!=FINISHED && !old->mainFlag) {
         Scheduler::put(old);
     }
 
@@ -39,6 +40,9 @@ void _thread::dispatch() {
             return;
         } else {
             running = main;
+            main->state = RUNNING;
+            finished = true;
+            printstring("\n\n It set main to be thread: \n");
         }
     }
     if (running) {

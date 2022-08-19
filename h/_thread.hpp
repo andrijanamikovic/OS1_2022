@@ -14,6 +14,7 @@ class _thread {
 public:
     friend class Thread;
     friend class Riscv;
+    friend class _sem;
 //    friend class Scheduler;
 
     //da li ja ovde treba da imam start/finish/exit itd????
@@ -53,6 +54,7 @@ public:
 //    friend class List;
 //    friend class _sem;
     static _thread* main;
+    static bool finished;
 //    //added..
 //    //static void wrapper(); ono body je wrapper valjda
 //    void start();
