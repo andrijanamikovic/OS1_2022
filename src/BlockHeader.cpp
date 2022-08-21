@@ -41,6 +41,7 @@ BlockHeader* BlockHeader::putBlock(BlockHeader* newBlck) {
 }
 
 BlockHeader* BlockHeader::removeBlock(BlockHeader *Blck) {
+    if (!Blck) return first;
     if (Blck == first){
         first = first->next;
         if (first) {
@@ -56,14 +57,30 @@ BlockHeader* BlockHeader::removeBlock(BlockHeader *Blck) {
             last->next = nullptr;
         }//added after testing allocator
         return first;
+    } else {
+        BlockHeader* current = first;
+        while (current && current!=Blck) {
+            current = current->next;
+        }
+        if (current) {
+            if (current->prev ){
+                current->prev->next = current->next;
     }
+    if (current->next)
+        current->next->prev = current->prev;
+            current = nullptr;
+        }
+        return first;
+    }
+//    }
 //    void *ptr = (void*)0x1010101010101;
-    if (Blck->prev ){
-            Blck->prev->next = Blck->next;
-    }
-    if (Blck->next)
-        Blck->next->prev = Blck->prev;
-    Blck = nullptr;
+//    if (Blck->prev  && Blck->prev != ptr){
+////        if (Blck!=ptr)
+//            Blck->prev->next = Blck->next;
+//    }
+//    if (Blck->next && Blck->next!= ptr)
+//        Blck->next->prev = Blck->prev;
+//    Blck = nullptr;
     return first;
 }
 

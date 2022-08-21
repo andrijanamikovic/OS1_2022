@@ -33,20 +33,34 @@ int mem_free(void* p){
     return (ret > 0 ? 0 : -2);
 }
 
-int thread_create(thread_t *handle,  void(*start_routine)(void*), void* arg){
+int thread_create(thread_t *handle,void(*start_routine)(void*), void* arg){
     if (!handle) return -1;
+    if (!start_routine) return -1;
+    __asm__ volatile ("mv a4, a3");
     __asm__ volatile ("mv a3, a2");
     __asm__ volatile ("mv a2, a1");
     __asm__ volatile ("mv a1, a0");
-    uint64* stack = (uint64*)MemoryAllocator::mem_alloc(DEFAULT_STACK_SIZE * sizeof (uint64));
-    __asm__ volatile ("mv a4, %0" : : "r" (stack));
     invoker(THREAD_CREATE);
     uint64 volatile ret;
     __asm__ volatile ("mv %0, a0" : "=r" (ret));
+//    __asm__ volatile ("mv %0, a1" : "=r" (handle));//? do I need this
     return (ret > 0 ? 0 : -2);
 }
 
-int thread_start(thread_t *handle){
+int thread_create_only(thread_t *handle,void(*start_routine)(void*), void* arg){
+    if (!handle) return -1;
+    if (!start_routine) return -1;
+    __asm__ volatile ("mv a4, a3");
+    __asm__ volatile ("mv a3, a2");
+    __asm__ volatile ("mv a2, a1");
+    __asm__ volatile ("mv a1, a0");
+    invoker(THREAD_CREATE_ONLY);
+    uint64 volatile ret;
+    __asm__ volatile ("mv %0, a0" : "=r" (ret));
+    __asm__ volatile ("mv %0, a1" : "=r" (handle));//? do I need this
+    return (ret > 0 ? 0 : -2);
+}
+int thread_start(thread_t handle){
     if (!handle) return -1;
     __asm__ volatile ("mv a4, a3");
     __asm__ volatile ("mv a3, a2");

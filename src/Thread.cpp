@@ -7,10 +7,12 @@
 
 Thread::Thread(void (*body)(void *), void *arg) {
     thread_create(&myHandle,body,arg);
+    this->myHandle = myHandle;
 }
 
 Thread::Thread() {
-    thread_create(&myHandle,wrapper,this);
+    thread_create_only(&myHandle,wrapper,this);
+    this->myHandle = myHandle;
 }
 
 Thread::~Thread() {
@@ -18,7 +20,7 @@ Thread::~Thread() {
 }
 
 int Thread::start() {
-    return thread_start(&myHandle);
+    return thread_start(myHandle);
 }
 
 void Thread::dispatch() {

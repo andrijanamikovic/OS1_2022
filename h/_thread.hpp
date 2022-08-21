@@ -45,7 +45,7 @@ public:
     static _thread *running;
     static uint64 timeSliceCounter;
 
-    static _thread* threadInit(Body body, void* arg, uint64* stack);
+    static _thread* threadInit(Body body, void* arg);
 
     void *operator new (size_t size);
     void *operator new[] (size_t size);

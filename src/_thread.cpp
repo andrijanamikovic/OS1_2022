@@ -24,31 +24,62 @@ void _thread::yield()
 }
 
 void _thread::dispatch() {
+//    _thread *old = running;
+//    if (old && old->state!=FINISHED && !old->mainFlag) {
+//        Scheduler::put(old);
+//    }
+//
+//    running = Scheduler::get();
+//
+//    if (running){
+//        running->state = RUNNING;
+//    } else {
+//        if (old->mainFlag) {
+//            running = main;
+//            main->state = FINISHED;
+//            return;
+//        } else {
+//            running = main;
+//            main->state = RUNNING;
+//            finished = true;
+//            printstring("\n\n It set main to be thread: \n");
+//        }
+//    }
+////    Riscv::mc_sstatus(Riscv::SSTATUS_SPP);
+////    Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
+//    if (running) {
+//        _thread::contextSwitch(&old->context, &running->context);
+//    }
+
     _thread *old = running;
-    if (old && old->state!=FINISHED && !old->mainFlag) {
+    if (old->state != FINISHED && !old->mainFlag && old->state!=BLOCKED) {
         Scheduler::put(old);
     }
-
     running = Scheduler::get();
+    while (running && running->state == FINISHED){
+        running = Scheduler::get();
+    }
+    if (running == nullptr) {
+        running = main;
+    }
+    running->state = RUNNING;
+    if (running == main) {
+        running->state = FINISHED;
+//        Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
 
-    if (running){
-        running->state = RUNNING;
+//        Riscv::ms_sstatus(Riscv::SSTATUS_SPP);
     } else {
-        if (old->mainFlag) {
-            running = main;
-            main->state = FINISHED;
-            return;
-        } else {
-            running = main;
-            main->state = RUNNING;
-            finished = true;
-            printstring("\n\n It set main to be thread: \n");
-        }
-    }
-    if (running) {
-        _thread::contextSwitch(&old->context, &running->context);
-    }
+        Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
+//                Riscv::ms_sstatus(Riscv::SSTATUS_SPIE);
 
+//        Riscv::ms_sstatus(Riscv::SSTATUS_SIE);
+    }
+//    printstring("\n Dispatch end\n\n");
+//    printinteger(Scheduler::size);
+//    printstring("\n\n\n");
+
+
+    _thread::contextSwitch(&old->context, &running->context);
 }
 
 void *_thread::operator new(size_t size) {
@@ -75,8 +106,21 @@ void _thread::setTimeSliceCounter(uint64 timeSliceCounter) {
     _thread::timeSliceCounter = timeSliceCounter;
 }
 
-_thread*  _thread::threadInit(_thread::Body body, void *arg, uint64 *stack) {
-    return new _thread(body, arg, stack);
+_thread*  _thread::threadInit(_thread::Body body, void *arg) {
+    _thread* current = (_thread*)__mem_alloc(sizeof (_thread) * sizeof (char *));
+    uint64* stack = (uint64*)__mem_alloc(DEFAULT_STACK_SIZE * sizeof (uint64));
+    current->arg = arg;
+    current ->body = body;
+    current ->stack = body != nullptr ? stack : nullptr;
+    current -> context = {body != nullptr ? (uint64) &threadWrapper: 0, //proveri da tu ne treba wrraper??? negde mozda treba da setujem finish na true
+                          stack != nullptr ? (uint64) &(current->stack[STACK_SIZE]) : 0};
+    current->state = CREATED;
+    current->timeSlice = DEFAULT_TIME_SLICE;
+    current->mainFlag = false;
+//    current->start();
+    return current;
+//    return new _thread(body, arg, stack);
+//    return new _thread(body, arg, stack);
 }
 
 int _thread::start() {
@@ -106,8 +150,8 @@ void _thread::threadWrapper() {
     Riscv::popSppSpie();
     running->state = RUNNING;
     running->body(running->arg);
-    running->state = FINISHED;
-    yield();
+//    running->state = FINISHED;
+    exit();
 }
 
 _thread* _thread::initMain() {
