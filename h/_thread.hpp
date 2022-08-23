@@ -6,7 +6,6 @@
 #define OS1_2022__THREAD_HPP
 
 #include "../lib/hw.h"
-//#include "scheduler.hpp"
 #include "../h/MemoryAllocator.hpp"
 
 
@@ -15,10 +14,7 @@ public:
     friend class Thread;
     friend class Riscv;
     friend class _sem;
-//    friend class Scheduler;
 
-    //da li ja ovde treba da imam start/finish/exit itd????
-    //msm da da
 
     enum ThreadState{
         CREATED, RUNNING, FINISHED, SLEEPING, BLOCKED
@@ -51,47 +47,36 @@ public:
     void *operator new[] (size_t size);
     void operator delete (void* p);
     void operator delete[] (void* p);
-//    friend class List;
-//    friend class _sem;
+
     static _thread* main;
     static bool finished;
-//    //added..
-//    //static void wrapper(); ono body je wrapper valjda
-//    void start();
-//    static void run();
-//    //
+
 
 private:
     _thread(Body body, void* arg) :
             body(body),
             arg(arg),
             stack(body != nullptr ? (uint64 *)MemoryAllocator::mem_alloc(DEFAULT_STACK_SIZE * sizeof (uint64)) : nullptr),
-            context({body != nullptr ? (uint64) body : 0, //proveri da tu ne treba wrraper??? negde mozda treba da setujem finish na true
+            context({body != nullptr ? (uint64) body : 0,
                      stack != nullptr ? (uint64) &stack[STACK_SIZE] : 0
                     }),
             state(CREATED),
             timeSlice(DEFAULT_TIME_SLICE),
             mainFlag(false)
     {
-//        if (body != nullptr) {
-//            Scheduler::put(this);
-//        }
     }
 
     _thread(Body body, void* arg, uint64* stack) :
             body(body),
             arg(arg),
             stack(stack),
-            context({body != nullptr ? (uint64) &threadWrapper: 0, //proveri da tu ne treba wrraper??? negde mozda treba da setujem finish na true
+            context({body != nullptr ? (uint64) &threadWrapper: 0,
                      stack != nullptr ? (uint64) &stack[STACK_SIZE] : 0
                     }),
             state(CREATED),
             timeSlice(DEFAULT_TIME_SLICE),
             mainFlag(false)
     {
-//        if (body != nullptr) {
-//            Scheduler::put(this);
-//        }
     }
 
     struct Context
@@ -127,6 +112,3 @@ private:
 };
 
 #endif //OS1_2022__THREAD_HPP
-
-//u wrraperu mozda treba negde da pozivam poopSppSpite to on radi u 7 vezbama, treba...
-//pogledaj threadWrraper u njegovom tcb-u i gde ti on treba i sta tacno predstavlja

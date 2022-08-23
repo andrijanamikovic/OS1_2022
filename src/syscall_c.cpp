@@ -13,7 +13,7 @@ void invoker(int serviceId){
 
 void* mem_alloc(size_t size){
     if(!size) return nullptr;
-    size_t blocks = (size)/ MEM_BLOCK_SIZE + (size % MEM_BLOCK_SIZE == 0 ? 0 : 1);
+    size_t blocks = (size * sizeof (BlockHeader))/ MEM_BLOCK_SIZE + ((size * sizeof (BlockHeader)) % MEM_BLOCK_SIZE == 0 ? 0 : 1);
     __asm__ volatile ("mv a1, %0" : : "r" (blocks));
     invoker(MEM_ALLOC);
     uint64 volatile ret;
@@ -57,7 +57,7 @@ int thread_create_only(thread_t *handle,void(*start_routine)(void*), void* arg){
     invoker(THREAD_CREATE_ONLY);
     uint64 volatile ret;
     __asm__ volatile ("mv %0, a0" : "=r" (ret));
-    __asm__ volatile ("mv %0, a1" : "=r" (handle));//? do I need this
+//    __asm__ volatile ("mv %0, a1" : "=r" (handle));//? do I need this
     return (ret > 0 ? 0 : -2);
 }
 int thread_start(thread_t handle){

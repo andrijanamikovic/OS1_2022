@@ -8,13 +8,14 @@
 
 Semaphore::Semaphore(unsigned int init) {
     sem_open(&myHandle, init);
+    this->myHandle = myHandle;
 }
 
 Semaphore::~Semaphore() {
     if (myHandle){
         sem_close(myHandle);
     }
-    myHandle = nullptr;
+//    myHandle = nullptr;
 }
 
 int Semaphore::signal() {

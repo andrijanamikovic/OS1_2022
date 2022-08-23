@@ -29,6 +29,7 @@ protected:
     virtual void run () {}
 private:
     thread_t myHandle;
+//    void* arg;
 };
 
 class _sem;

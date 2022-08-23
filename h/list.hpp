@@ -24,7 +24,7 @@ private:
         }
     };
 
-    Elem *head, *tail;
+    Elem *headList, *tailList;
 public:
 
 

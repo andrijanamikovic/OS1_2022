@@ -34,16 +34,6 @@ uint64 Riscv::handleSupervisorTrap()
 //    __asm__ volatile ("mv %0, s3":"=r" (arrg3));
 //    __asm__ volatile ("mv %0, s4":"=r" (arrg4));4
 
-//    __asm__ volatile ("ld s1, 11*8(s0)");
-//    __asm__ volatile ("ld s2, 12*8(s0)");
-//    __asm__ volatile ("ld s3, 13*8(s0)");
-//    __asm__ volatile ("ld s4, 14*8(s0)");
-////    __asm__ volatile ("mv %0, s0":"=r" (code));
-//    __asm__ volatile ("mv %0, s1":"=r" (arrg1));
-//    __asm__ volatile ("mv %0, s2":"=r" (arrg2));
-//    __asm__ volatile ("mv %0, s3":"=r" (arrg3));
-//    __asm__ volatile ("mv %0, s4":"=r" (arrg4));
-//
     __asm__ volatile ("mv %0, a1":"=r" (arrg1));
     __asm__ volatile ("mv %0, a2":"=r" (arrg2));
     __asm__ volatile ("mv %0, a3":"=r" (arrg3));
@@ -73,51 +63,24 @@ uint64 Riscv::handleSupervisorTrap()
                 break;
             }
             case THREAD_CREATE:{
-//                __asm__ volatile("ld s1, 11*8(fp)");
-//                __asm__ volatile("ld s2, 12*8(fp)");
-//                __asm__ volatile("ld s3, 13*8(fp)");
-//                __asm__ volatile ("ld s4, 14*8(fp)");
-//                __asm__ volatile ("mv %0, s1":"=r" (arrg1));
-//                __asm__ volatile ("mv %0, s2":"=r" (arrg2));
-//                __asm__ volatile ("mv %0, s3":"=r" (arrg3));
-//                __asm__ volatile ("mv %0, s4":"=r" (arrg4));
                 thread_t *handle;
-//                __asm__ volatile ("ld s1, 11*8(fp)");
-//                __asm__ volatile ("mv %0, s1":"=r" (handle));
                 handle = (thread_t*)arrg1;
                 _thread::Body body = (_thread::Body)arrg2;
                 void* arg = (void*)arrg3;
-//                uint64* stack = (uint64*)arrg4;
                *handle = _thread::threadInit(body, arg);
                 (*handle)->start();
                 __asm__ volatile("mv a0, %0" : :"r"(handle));
                 __asm__ volatile("sd a0, 10*8(fp)");
-//                if (handle== nullptr) retval = -1;
-//                __asm__ volatile("mv a0, %0" : :"r"(retval));
                 break;
             }
             case THREAD_CREATE_ONLY:{
-//                __asm__ volatile("ld s1, 11*8(fp)");
-//                __asm__ volatile("ld s2, 12*8(fp)");
-//                __asm__ volatile("ld s3, 13*8(fp)");
-//                __asm__ volatile ("ld s4, 14*8(fp)");
-//                __asm__ volatile ("mv %0, s1":"=r" (arrg1));
-//                __asm__ volatile ("mv %0, s2":"=r" (arrg2));
-//                __asm__ volatile ("mv %0, s3":"=r" (arrg3));
-//                __asm__ volatile ("mv %0, s4":"=r" (arrg4));
                 thread_t *handle;
-//                __asm__ volatile ("ld s1, 11*8(fp)");
-//                __asm__ volatile ("mv %0, s1":"=r" (handle));
                 handle = (thread_t*)arrg1;
                 _thread::Body body = (_thread::Body)arrg2;
                 void* arg = (void*)arrg3;
-//                uint64* stack = (uint64*)arrg4;
                 *handle = _thread::threadInit(body, arg);
-//                (*handle)->start();
                 __asm__ volatile("mv a0, %0" : :"r"(handle));
                 __asm__ volatile("sd a0, 10*8(fp)");
-//                if (handle== nullptr) retval = -1;
-//                __asm__ volatile("mv a0, %0" : :"r"(retval));
                 break;
             }
             case THREAD_EXIT:{
@@ -145,7 +108,6 @@ uint64 Riscv::handleSupervisorTrap()
             case SEM_CLOSE:{
                 sem_t *handle = (sem_t*)arrg1;
                 _sem::sem_close((_sem *)handle);
-                if (handle== nullptr) retval = -1;
                 __asm__ volatile("mv a0, %0" : :"r"(retval));
                 break;
             }

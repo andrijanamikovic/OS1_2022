@@ -29,7 +29,6 @@ private:
         waiting = new List();
 
     }
-    ~_sem();
     int value;
     List* waiting;
 

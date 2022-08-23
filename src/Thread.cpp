@@ -28,7 +28,7 @@ void Thread::dispatch() {
 }
 
 int Thread::sleep(time_t) {
-    return 0; //ovo mi nije otkucano....
+    return 0; //....
 }
 
 void Thread::wrapper(void *p) {

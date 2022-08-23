@@ -7,25 +7,25 @@
 
 int _sem::sem_close(_sem *sem) {
     if (!sem) return -3;
-    sem->value = 0;
+//    sem->value = 0;
     _thread* current = sem->waiting->removeFirst();
     while (current) {
         current->setState(0);
         current->start();
         current = sem->waiting->removeFirst();
     }
-//    delete sem->waiting;
     sem->waiting = nullptr;
     __mem_free(sem);
-//    delete sem;
     return 0;
 }
 
 _sem* _sem::sem_open(unsigned int val) {
     _sem* sem = (_sem *)(__mem_alloc(sizeof(_sem)));
+    if (sem == nullptr) return nullptr;
     sem->value = val;
-    sem->waiting = new List();
-//    sem->waiting = (List*)(__mem_alloc(sizeof (List)));
+    sem->waiting = (List*)(__mem_alloc(sizeof (List)));
+    sem->waiting->init();
+
 //    sem->waiting->init();
 //    sem->waiting = new List();
     return sem;
@@ -93,7 +93,7 @@ void _sem::unblock() {
     }
 }
 
-_sem::~_sem() {
-    sem_close(this);
-}
+//_sem::~_sem() {
+//    sem_close(this);
+//}
 
