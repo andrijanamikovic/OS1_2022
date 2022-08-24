@@ -20,10 +20,10 @@ int _sem::sem_close(_sem *sem) {
 }
 
 _sem* _sem::sem_open(unsigned int val) {
-    _sem* sem = (_sem *)(__mem_alloc(sizeof(_sem)));
+    _sem* sem = (_sem *)(__mem_alloc((sizeof(_sem)+MEM_BLOCK_SIZE-1)/MEM_BLOCK_SIZE));
     if (sem == nullptr) return nullptr;
     sem->value = val;
-    sem->waiting = (List*)(__mem_alloc(sizeof (List)));
+    sem->waiting = (List*)(__mem_alloc((sizeof (List)+MEM_BLOCK_SIZE-1)/MEM_BLOCK_SIZE));
     sem->waiting->init();
 
 //    sem->waiting->init();

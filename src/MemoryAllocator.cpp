@@ -9,6 +9,7 @@ BlockHeader* MemoryAllocator::AllocatedMemoryBlocks = nullptr;
 bool MemoryAllocator::initialize = false;
 
 void* MemoryAllocator::mem_alloc(size_t size){
+    size = size * MEM_BLOCK_SIZE;
     if (initialize == false) MemoryAllocator::init();
     BlockHeader* current = FreeMemoryBlocks->first;
     while(current){
@@ -18,10 +19,10 @@ void* MemoryAllocator::mem_alloc(size_t size){
     if (current == nullptr) return nullptr;
     BlockHeader* newBlck;
 
-    size_t remaining = current->size - size;
+    size_t remaining = current->size-size;
     if (remaining >= sizeof (BlockHeader) + MEM_BLOCK_SIZE){
         if (AllocatedMemoryBlocks == nullptr) {
-            AllocatedMemoryBlocks = (BlockHeader *) ((char*) current + remaining);
+            AllocatedMemoryBlocks = (BlockHeader *) ((char*)current + remaining);
             AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->last = nullptr;
         }
         newBlck = (BlockHeader*)((char*)current+remaining);
@@ -38,6 +39,7 @@ void* MemoryAllocator::mem_alloc(size_t size){
             AllocatedMemoryBlocks = (BlockHeader*)(current + remaining - sizeof (BlockHeader));
             AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->last = nullptr;
         }
+        newBlck->next= newBlck->prev = nullptr;
         AllocatedMemoryBlocks->first = AllocatedMemoryBlocks->putBlock(newBlck);
     }
 

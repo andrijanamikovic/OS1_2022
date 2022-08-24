@@ -5,7 +5,7 @@
 
 void List::addFirst(_thread *data)
 {
-    Elem *elem = (Elem*) __mem_alloc(sizeof (Elem)) ;
+    Elem *elem = (Elem*) __mem_alloc(sizeof (Elem)/MEM_BLOCK_SIZE) ;
     elem->data = data;
     elem->next = headList;
     this->headList = elem;
@@ -32,7 +32,7 @@ _thread *List::removeFirst()
 
 void List::addLast(_thread *data)
 {
-    Elem *elem = (Elem*) __mem_alloc(sizeof (Elem)) ;
+    Elem *elem = (Elem*) __mem_alloc((sizeof (Elem)+MEM_BLOCK_SIZE-1)/MEM_BLOCK_SIZE) ;
     elem->data = data;
     elem->next = nullptr;
     if (tailList)

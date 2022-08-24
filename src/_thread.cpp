@@ -71,8 +71,8 @@ void _thread::setTimeSliceCounter(uint64 timeSliceCounter) {
 }
 
 _thread*  _thread::threadInit(_thread::Body body, void *arg) {
-    _thread* current = (_thread*)__mem_alloc((sizeof (_thread)));
-    uint64* stack = (uint64*)__mem_alloc(DEFAULT_STACK_SIZE * sizeof (uint64));
+    _thread* current = (_thread*)__mem_alloc((sizeof (_thread) + MEM_BLOCK_SIZE - 1)/MEM_BLOCK_SIZE);
+    uint64* stack = (uint64*)__mem_alloc((DEFAULT_STACK_SIZE * sizeof (uint64)+MEM_BLOCK_SIZE-1)/MEM_BLOCK_SIZE);
     current->arg = arg;
     current ->body = body;
     current ->stack = body != nullptr ? stack : nullptr;
