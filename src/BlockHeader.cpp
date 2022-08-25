@@ -114,8 +114,5 @@ void BlockHeader::joinFreeBlocks() {
             last = current;
         }
         current->next = current->next->next;
-//        if (current->next == nullptr) {
-//            last = current;
-//        }
     }
 }

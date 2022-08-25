@@ -16,7 +16,7 @@ Thread::Thread() {
 }
 
 Thread::~Thread() {
-    delete &myHandle;
+    mem_free((void*)myHandle);
 }
 
 int Thread::start() {

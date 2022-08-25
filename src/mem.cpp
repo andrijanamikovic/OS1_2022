@@ -2,7 +2,7 @@
 // Created by os on 7/15/22.
 //
 
-#include "../lib/mem.h"
+#include "../h/mem.h"
 #include "../h/MemoryAllocator.hpp"
 
 void* __mem_alloc(size_t size){
@@ -12,3 +12,4 @@ void* __mem_alloc(size_t size){
 int __mem_free(void* ptr){
     return MemoryAllocator::mem_free(ptr);
 }
+//

@@ -51,7 +51,7 @@ uint64 Riscv::handleSupervisorTrap()
 
         switch (code) {
             case MEM_ALLOC: {
-                uint64 blocks = arrg1 * MEM_BLOCK_SIZE;
+                uint64 blocks = arrg1;
                 retval = (uint64) MemoryAllocator::mem_alloc(blocks);
                 __asm__ volatile("sd a0, 10*8(fp)");
                 break;

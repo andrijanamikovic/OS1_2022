@@ -13,7 +13,7 @@ void invoker(int serviceId){
 
 void* mem_alloc(size_t size){
     if(!size) return nullptr;
-    size_t blocks = (size)/ MEM_BLOCK_SIZE + (size) % MEM_BLOCK_SIZE == 0 ? 0 : 1;
+    size_t blocks = (size/ MEM_BLOCK_SIZE) + (size % MEM_BLOCK_SIZE == 0 ? 0 : 1);
     __asm__ volatile ("mv a1, %0" : : "r" (blocks));
     invoker(MEM_ALLOC);
     uint64 volatile ret;
