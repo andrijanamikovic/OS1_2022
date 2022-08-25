@@ -1,6 +1,6 @@
 #include "../h/_thread.hpp"
 #include "../h/riscv.hpp"
-#include "../test/printing.hpp"
+#include "../h/print.hpp"
 void userMain();
 
 void wraperUserMain(void* ){

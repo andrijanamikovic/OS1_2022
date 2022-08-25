@@ -61,8 +61,9 @@ BlockHeader* BlockHeader::removeBlock(BlockHeader *Blck) {
     } else {
         BlockHeader* current = first;
         while (current && current!=Blck) {
-            if (current == current->next)
-                return first;
+//            if (current == current->next) {
+//                return first;
+//            }
             current = current->next;
         }
         if (current) {
@@ -108,6 +109,9 @@ void BlockHeader::joinFreeBlocks() {
         current->size += current->next->size + sizeof(BlockHeader);
         if (current->next->next) {
             current->next->next->prev = current;
+        }
+        if (last == current->next){
+            last = current;
         }
         current->next = current->next->next;
 //        if (current->next == nullptr) {

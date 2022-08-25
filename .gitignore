@@ -62,3 +62,5 @@ test/ConsumerProducer_CPP_API_test.hpp
 test/ConsumerProducer_CPP_Sync_API_test.hpp
 test/ThreadSleep_C_API_test.hpp
 test/uputstvo.txt
+.idea/modules.xml
+.idea/OS1_2022.iml
